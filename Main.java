@@ -1,15 +1,16 @@
-import java.sql.Connection;
-import java.sql.SQLException;
-import repositorio.ConexionBD;
-import repositorio.RepositorioException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import entidades.Propietario;
+import repositorio.PropietarioRepositorio;
 
 public class Main {
-
     public static void main(String[] args) {
-        try (Connection cn = ConexionBD.obtener()) {
-            System.out.println("Conexion exitosa a la base: " + cn.getCatalog());
-        } catch (RepositorioException | SQLException e) {
-            System.out.println("Fallo la conexion: " + e.getMessage());
-        }
+        PropietarioRepositorio repo = new PropietarioRepositorio();
+        Propietario p = new Propietario(0, LocalDate.now(), LocalTime.now().withNano(0), 0,
+                "Luis", "Gomez", LocalDate.of(1985, 5, 5), "100", "3001234567", "luis@correo.com");
+        repo.guardar(p);
+        System.out.println("Guardado con id " + p.getIdPropietario());
+        System.out.println("Total en la base: " + repo.obtenerTodos().size());
     }
 }
