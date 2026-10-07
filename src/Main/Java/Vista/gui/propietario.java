@@ -1,7 +1,15 @@
 package Vista.gui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class propietario extends JFrame {
 
@@ -32,7 +40,8 @@ public class propietario extends JFrame {
         add(lblBienvenida, BorderLayout.NORTH);
         add(menu, BorderLayout.CENTER);
     }
-     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new propetario("John Doe").setVisible(true));
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new propietario("John Doe").setVisible(true));
     }
 }

@@ -16,9 +16,10 @@ public class login extends JFrame {
 
     private JTextField txtUsuario;
     private JPasswordField txtContrasena;
+    private JButton btnIngresar;
+    private JButton btnSalir;
 
     public login() {
-        
         setTitle("Sistema Veterinario - Iniciar sesión");
         setSize(320, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,44 +37,36 @@ public class login extends JFrame {
         txtContrasena = new JPasswordField();
         panel.add(txtContrasena);
 
-        JButton btnIngresar = new JButton("Ingresar");
-        JButton btnSalir = new JButton("Salir");
+        btnIngresar = new JButton("Ingresar");
+        btnSalir = new JButton("Salir");
         panel.add(btnIngresar);
         panel.add(btnSalir);
 
         add(panel);
 
-        btnIngresar.addActionListener(e -> iniciarSesion());
         btnSalir.addActionListener(e -> System.exit(0));
         getRootPane().setDefaultButton(btnIngresar);
     }
 
-    private void iniciarSesion() {
-        String usuario = txtUsuario.getText().trim();
-        String contrasena = new String(txtContrasena.getPassword());
+    public String getUsuario() {
+        return txtUsuario.getText().trim();
+    }
 
-        if (usuario.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                this, "Escribe el usuario y la contraseña.",
-                "Campos incompletos", JOptionPane.WARNING_MESSAGE
-            );
-            return;
-        }
+    public String getContrasena() {
+        return new String(txtContrasena.getPassword());
+    }
 
-        // Credenciales temporales para probar el login
-        if (usuario.equals("carlos") && contrasena.equals("1234")) {
-            JOptionPane.showMessageDialog(this, "Bienvenido al sistema.");
-            veterinario ventanaVeterinario = new veterinario(usuario);
-            ventanaVeterinario.setVisible(true);
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(
-                this, "Usuario o contraseña incorrectos.",
-                "Error de acceso", JOptionPane.ERROR_MESSAGE
-            );
-            txtContrasena.setText("");
-            txtContrasena.requestFocus();
-        }
+    public JButton getBtnIngresar() {
+        return btnIngresar;
+    }
+
+    public void mostrarMensaje(String mensaje, String titulo, int tipo) {
+        JOptionPane.showMessageDialog(this, mensaje, titulo, tipo);
+    }
+
+    public void limpiarContrasena() {
+        txtContrasena.setText("");
+        txtContrasena.requestFocus();
     }
 
     public static void main(String[] args) {

@@ -13,6 +13,11 @@ import javax.swing.SwingUtilities;
 
 public class veterinario extends JFrame {
 
+    private JButton btnAnimales;
+    private JButton btnCitas;
+    private JButton btnConsultas;
+    private JButton btnHistorial;
+
     public veterinario(String usuario) {
         setTitle("Sistema Veterinario - Módulo principal");
         setSize(700, 450);
@@ -25,10 +30,10 @@ public class veterinario extends JFrame {
         );
         lblBienvenida.setFont(new Font("Arial", Font.BOLD, 22));
 
-        JButton btnAnimales = new JButton("Gestionar animales");
-        JButton btnCitas = new JButton("Gestionar citas");
-        JButton btnConsultas = new JButton("Gestionar consultas");
-        JButton btnHistorial = new JButton("Historial médico");
+        btnAnimales = new JButton("Gestionar animales");
+        btnCitas = new JButton("Gestionar citas");
+        btnConsultas = new JButton("Gestionar consultas");
+        btnHistorial = new JButton("Historial médico");
 
         JPanel menu = new JPanel(new GridLayout(2, 2, 10, 10));
         menu.add(btnAnimales);
@@ -40,8 +45,12 @@ public class veterinario extends JFrame {
         add(lblBienvenida, BorderLayout.NORTH);
         add(menu, BorderLayout.CENTER);
     }
-     public static void main(String[] args) {
+
+    public JButton getBtnAnimales() {
+        return btnAnimales;
+    }
+
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new veterinario("Jane Doe").setVisible(true));
     }
-    
 }
