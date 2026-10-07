@@ -21,13 +21,16 @@ public final class ConexionBD {
                 + "/" + p.getProperty("base")
                 + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
         try {
+            // Cargar el driver de MySQL en memoria
+            Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(url, p.getProperty("usuario"), p.getProperty("clave"));
+        } catch (ClassNotFoundException e) {
+            throw new RepositorioException("No se encontró el driver de MySQL (mysql-connector-j): " + e.getMessage(), e);
         } catch (SQLException e) {
             throw new RepositorioException("No se pudo conectar a la base de datos: " + e.getMessage(), e);
         }
     }
 
-    /** Abre y cierra una conexion; sirve para verificar la configuracion al iniciar. */
     public static void probar() {
         try (Connection cn = obtener()) {
             cn.isValid(3);

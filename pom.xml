@@ -11,24 +11,38 @@
 
     <name>Veterinaria</name>
 
-<properties>
-    <maven.compiler.release>21</maven.compiler.release>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-</properties>
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <!-- Conector Oficial de MySQL -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>9.0.0</version>
+            <version>8.3.0</version>
         </dependency>
 
-        <!-- Dependencia Protobuf para resolver faltantes en el build path -->
+        <!-- Dependencia Protobuf -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>3.25.3</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Plugin para poder ejecutar 'Main' desde el entorno Maven -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <mainClass>Main</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
