@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,13 +16,12 @@ import javax.swing.SwingUtilities;
 
 public class veterinario extends JFrame {
 
-    private JButton btnAnimales;
-    private JButton btnCitas;
-    private JButton btnConsultas;
-    private JButton btnHistorial;
+    private final JButton btnAnimales;
+    private final JButton btnCitas;
+    private final JButton btnConsultas;
+    private final JButton btnHistorial;
 
-    // Colores del tema médico
-    private static final Color COLOR_PRIMARIO = new Color(0, 102, 153); // Azul corporativo
+    private static final Color COLOR_PRIMARIO = new Color(0, 102, 153);
     private static final Color COLOR_FONDO = new Color(245, 247, 250);
     private static final Color COLOR_TARJETA = Color.WHITE;
     private static final Color COLOR_TEXTO = new Color(30, 40, 50);
@@ -36,7 +36,6 @@ public class veterinario extends JFrame {
         panelPrincipal.setBackground(COLOR_FONDO);
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(25, 30, 25, 30));
 
-        // Banner Superior
         JPanel panelHeader = new JPanel(new BorderLayout());
         panelHeader.setOpaque(false);
 
@@ -51,7 +50,6 @@ public class veterinario extends JFrame {
         panelHeader.add(lblBienvenida, BorderLayout.NORTH);
         panelHeader.add(lblSubtitulo, BorderLayout.SOUTH);
 
-        // Menú Grid de Opciones
         btnAnimales = crearBotonOpcion("🐾 Gestionar animales");
         btnCitas = crearBotonOpcion("📅 Gestionar citas");
         btnConsultas = crearBotonOpcion("🩺 Gestionar consultas");
@@ -84,8 +82,21 @@ public class veterinario extends JFrame {
         return btn;
     }
 
+    // Getters para el Presentador
     public JButton getBtnAnimales() {
         return btnAnimales;
+    }
+
+    public JButton getBtnCitas() {
+        return btnCitas;
+    }
+
+    public JButton getBtnConsultas() {
+        return btnConsultas;
+    }
+
+    public JButton getBtnHistorial() {
+        return btnHistorial;
     }
 
     public static void main(String[] args) {

@@ -5,17 +5,17 @@ public class Usuario {
     private String usuario;
     private String contrasena;
     private String rol;
-    private Integer idPersona;
+    private Integer personaIdPersona;
 
     public Usuario() {
     }
 
-    public Usuario(int idUsuario, String usuario, String contrasena, String rol, Integer idPersona) {
+    public Usuario(int idUsuario, String usuario, String contrasena, String rol, Integer personaIdPersona) {
         this.idUsuario = idUsuario;
         this.usuario = usuario;
         this.contrasena = contrasena;
         this.rol = rol;
-        this.idPersona = idPersona;
+        this.personaIdPersona = personaIdPersona;
     }
 
     public int getIdUsuario() { return idUsuario; }
@@ -30,6 +30,6 @@ public class Usuario {
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
 
-    public Integer getIdPersona() { return idPersona; }
-    public void setIdPersona(Integer idPersona) { this.idPersona = idPersona; }
+    public Integer getPersonaIdPersona() { return personaIdPersona; }
+    public void setPersonaIdPersona(Integer personaIdPersona) { this.personaIdPersona = personaIdPersona; }
 }

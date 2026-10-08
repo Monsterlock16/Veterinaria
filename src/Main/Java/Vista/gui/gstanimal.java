@@ -23,19 +23,19 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 public class gstanimal extends JFrame {
     private int siguienteId = 1;
-    private JTextField txtNombre_propetario;
-    private JTextField txtNombre;
-    private JTextField txtEspecie;
-    private JTextField txtRaza;
-    private JSpinner txtPeso;
-    private JTextField txtColor;
-    private JSpinner spfechaNacimiento;
-    private JComboBox<String> txtSexo;
-    private JComboBox<String> txtEstado_salud;
+    private final JTextField txtNombre_propetario;
+    private final JTextField txtNombre;
+    private final JTextField txtEspecie;
+    private final JTextField txtRaza;
+    private final JSpinner txtPeso;
+    private final JTextField txtColor;
+    private final JSpinner spfechaNacimiento;
+    private final JComboBox<String> txtSexo;
+    private final JComboBox<String> txtEstado_salud;
 
 
-    private DefaultTableModel modelo;
-    private JTable tabla;
+    private final DefaultTableModel modelo;
+    private final JTable tabla;
 
     public gstanimal() {
         setTitle("Gestión de Animales");
@@ -197,7 +197,8 @@ public class gstanimal extends JFrame {
             txtNombre.setText(modelo.getValueAt(filaSeleccionada, 2).toString());
             txtEspecie.setText(modelo.getValueAt(filaSeleccionada, 3).toString());
             txtRaza.setText(modelo.getValueAt(filaSeleccionada, 4).toString());
-            txtPeso.setValue(Double.parseDouble(modelo.getValueAt(filaSeleccionada, 5).toString()));
+            double peso = Double.parseDouble(modelo.getValueAt(filaSeleccionada, 5).toString());
+            txtPeso.setValue(peso);
             txtColor.setText(modelo.getValueAt(filaSeleccionada, 6).toString());
             spfechaNacimiento.setValue((Date) modelo.getValueAt(filaSeleccionada, 7));
             txtSexo.setSelectedItem(modelo.getValueAt(filaSeleccionada, 8).toString());

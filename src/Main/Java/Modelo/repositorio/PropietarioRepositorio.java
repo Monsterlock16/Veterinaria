@@ -1,88 +1,115 @@
 package Modelo.repositorio;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 
 import Modelo.entidades.Propietario;
 
-/** Propietarios guardados en MySQL (tablas PERSONA + PROPIETARIO). */
 public class PropietarioRepositorio {
 
-    private static final String SELECT_BASE =
-            "SELECT pr.idPROPIETARIO, pr.fecha_registro, pr.hora_registro, "
-          + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo "
-          + "FROM PROPIETARIO pr JOIN PERSONA p ON p.idPERSONA = pr.PERSONA_idPERSONA ";
-
-    public void guardar(Propietario p) {
-        if (p == null || buscarPorDocumento(p.getDocumento()) != null) {
-            return;
-        }
-        JdbcUtil.enTransaccion(cn -> {
-            int idPersona = JdbcUtil.insertarPersona(cn, p);
-            String sql = "INSERT INTO PROPIETARIO (PERSONA_idPERSONA, fecha_registro, hora_registro) VALUES (?, ?, ?)";
-            try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setInt(1, idPersona);
-                ps.setObject(2, p.getfechaRegistro());
-                ps.setObject(3, p.gethoraRegistro());
-                ps.executeUpdate();
-                p.setIdpersona(idPersona);
-                p.setIdPropietario(JdbcUtil.claveGenerada(ps));
-            }
-        });
-    }
-
-    public List<Propietario> obtenerTodos() {
-        return JdbcUtil.consultar(SELECT_BASE + "ORDER BY pr.idPROPIETARIO", ps -> { },
-                PropietarioRepositorio::mapear);
-    }
-
-    public Propietario buscarPorDocumento(String doc) {
-        if (doc == null) {
-            return null;
-        }
-        return JdbcUtil.consultarUno(SELECT_BASE + "WHERE p.documento = ?",
-                ps -> ps.setString(1, doc), PropietarioRepositorio::mapear);
-    }
-
+    /**
+     * Busca un propietario por su ID único en la BD
+     */
     public Propietario buscarPorId(int id) {
-        return JdbcUtil.consultarUno(SELECT_BASE + "WHERE pr.idPROPIETARIO = ?",
-                ps -> ps.setInt(1, id), PropietarioRepositorio::mapear);
-    }
+        String sql = "SELECT pr.idPROPIETARIO, pr.fecha_registro, pr.hora_registro, "
+                   + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
+                   + "FROM propietario pr "
+                   + "JOIN persona p ON p.idPERSONA = pr.PERSONA_idPERSONA "
+                   + "LEFT JOIN usuario u ON u.PERSONA_idPERSONA = p.idPERSONA "
+                   + "WHERE pr.idPROPIETARIO = ?";
 
-    public boolean eliminar(String doc) {
-        Propietario p = buscarPorDocumento(doc);
-        if (p == null) {
-            return false;
+        try (Connection cn = ConexionBD.obtener();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapearPropietario(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar propietario por ID: " + e.getMessage());
         }
-        JdbcUtil.enTransaccion(cn -> {
-            try (PreparedStatement ps = cn.prepareStatement("DELETE FROM PROPIETARIO WHERE idPROPIETARIO = ?")) {
-                ps.setInt(1, p.getIdPropietario());
-                ps.executeUpdate();
-            }
-            try (PreparedStatement ps = cn.prepareStatement("DELETE FROM PERSONA WHERE idPERSONA = ?")) {
-                ps.setInt(1, p.getIdpersona());
-                ps.executeUpdate();
-            }
-        });
-        return true;
+
+        return null;
     }
 
-    private static Propietario mapear(ResultSet rs) throws SQLException {
+    /**
+     * Busca un propietario por su número de documento
+     */
+    public Propietario buscarPorDocumento(String documento) {
+        if (documento == null || documento.trim().isEmpty()) return null;
+
+        String sql = "SELECT pr.idPROPIETARIO, pr.fecha_registro, pr.hora_registro, "
+                   + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
+                   + "FROM propietario pr "
+                   + "JOIN persona p ON p.idPERSONA = pr.PERSONA_idPERSONA "
+                   + "LEFT JOIN usuario u ON u.PERSONA_idPERSONA = p.idPERSONA "
+                   + "WHERE p.documento = ?";
+
+        try (Connection cn = ConexionBD.obtener();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setString(1, documento.trim());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapearPropietario(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar propietario por documento: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Busca un propietario por su nombre de usuario de inicio de sesión
+     */
+    public Propietario buscarPorUsuario(String nombreUsuario) {
+        if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) return null;
+
+        String sql = "SELECT pr.idPROPIETARIO, pr.fecha_registro, pr.hora_registro, "
+                   + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
+                   + "FROM propietario pr "
+                   + "JOIN persona p ON p.idPERSONA = pr.PERSONA_idPERSONA "
+                   + "JOIN usuario u ON u.PERSONA_idPERSONA = p.idPERSONA "
+                   + "WHERE u.usuario = ?";
+
+        try (Connection cn = ConexionBD.obtener();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setString(1, nombreUsuario.trim());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapearPropietario(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar propietario por usuario: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    private Propietario mapearPropietario(ResultSet rs) throws SQLException {
         return new Propietario(
-                rs.getInt("idPROPIETARIO"),
-                rs.getObject("fecha_registro", LocalDate.class),
-                rs.getObject("hora_registro", LocalTime.class),
-                rs.getInt("idPERSONA"),
-                rs.getString("nombres"),
-                rs.getString("apellidos"),
-                rs.getObject("fecha_nacimiento", LocalDate.class),
-                rs.getString("documento"),
-                rs.getString("telefono"),
-                rs.getString("correo"));
+            rs.getInt("idPROPIETARIO"),
+            rs.getDate("fecha_registro") != null ? rs.getDate("fecha_registro").toLocalDate() : null,
+            rs.getTime("hora_registro") != null ? rs.getTime("hora_registro").toLocalTime() : null,
+            rs.getInt("idPERSONA"),
+            rs.getString("nombres"),
+            rs.getString("apellidos"),
+            rs.getDate("fecha_nacimiento") != null ? rs.getDate("fecha_nacimiento").toLocalDate() : null,
+            rs.getString("documento"),
+            rs.getString("telefono"),
+            rs.getString("correo"),
+            rs.getString("usuario")
+        );
     }
 }
