@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
+import Modelo.repositorio.RepositorioException;
 
 public class Gstcitas_V extends JFrame {
 
@@ -44,6 +45,7 @@ public class Gstcitas_V extends JFrame {
     private final JTable tabla = new JTable(modelo);
 
     public Gstcitas_V() {
+        TemaVeterinaria.aplicarIcono(this);
         setTitle("Gestión de Citas - Veterinario");
         setSize(850, 520);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -104,6 +106,7 @@ public class Gstcitas_V extends JFrame {
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
 
+        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarCombosBD();
         cargarCitasBD();
     }
@@ -125,8 +128,9 @@ public class Gstcitas_V extends JFrame {
                 cbAnimales.addItem(item);
                 mapaAnimales.put(item, rs.getInt("idANIMAL"));
             }
-        } catch (SQLException ex) {
-            System.err.println("Error al cargar animales: " + ex.getMessage());
+        } catch (SQLException | RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar animales: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
 
         // 2. Cargar Veterinarios
@@ -142,8 +146,9 @@ public class Gstcitas_V extends JFrame {
                 cbVeterinarios.addItem(item);
                 mapaVeterinarios.put(item, rs.getInt("idVETERINARIO"));
             }
-        } catch (SQLException ex) {
-            System.err.println("Error al cargar veterinarios: " + ex.getMessage());
+        } catch (SQLException | RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar veterinarios: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -209,8 +214,9 @@ public class Gstcitas_V extends JFrame {
                     rs.getString("estado")
                 });
             }
-        } catch (SQLException ex) {
-            System.err.println("Error al cargar lista de citas: " + ex.getMessage());
+        } catch (SQLException | RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar lista de citas: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

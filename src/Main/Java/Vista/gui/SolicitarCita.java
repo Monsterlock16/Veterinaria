@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import Modelo.repositorio.ConexionBD;
+import Modelo.repositorio.RepositorioException;
 
 public class SolicitarCita extends JFrame {
     private final JComboBox<String> cbMascotas = new JComboBox<>();
@@ -29,6 +30,7 @@ public class SolicitarCita extends JFrame {
     private final DatosPropietario datos;
 
     public SolicitarCita(DatosPropietario datos) {
+        TemaVeterinaria.aplicarIcono(this);
         this.datos = datos;
 
         setTitle("Solicitar Cita Médica");
@@ -49,6 +51,7 @@ public class SolicitarCita extends JFrame {
 
         add(new JLabel()); add(btnSolicitar);
 
+        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarMascotasCombo();
     }
 
@@ -69,7 +72,7 @@ public class SolicitarCita extends JFrame {
                 cbMascotas.addItem(item);
                 mapaMascotas.put(item, rs.getInt("idANIMAL"));
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | RepositorioException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar mascotas: " + ex.getMessage());
         }
     }
@@ -131,6 +134,10 @@ public class SolicitarCita extends JFrame {
         if (rs.next()) {
             return rs.getInt("idPROPIETARIO");
         }
+    } catch (RepositorioException ex) {
+        JOptionPane.showMessageDialog(this, "No se pudo consultar el propietario: " + ex.getMessage(),
+                "Error de conexión", JOptionPane.ERROR_MESSAGE);
+        return 0;
     } catch (SQLException ignored) {}
     return 1;
     }

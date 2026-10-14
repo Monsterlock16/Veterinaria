@@ -27,6 +27,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
+import Modelo.repositorio.RepositorioException;
 
 public class MisAnimales extends JFrame {
     private final JTextField txtNombre = new JTextField();
@@ -41,6 +42,7 @@ public class MisAnimales extends JFrame {
     private final DatosPropietario datos;
 
     public MisAnimales(DatosPropietario datos) {
+        TemaVeterinaria.aplicarIcono(this);
         this.datos = datos;
 
         setTitle("Mis Mascotas - Propietario");
@@ -72,6 +74,7 @@ public class MisAnimales extends JFrame {
         add(new JScrollPane(tabla), BorderLayout.CENTER);
         add(btnGuardar, BorderLayout.SOUTH);
 
+        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarMascotasBD();
     }
 
@@ -96,7 +99,7 @@ public class MisAnimales extends JFrame {
                     rs.getString("raza"), rs.getBigDecimal("peso"), rs.getString("color"), rs.getString("sexo")
                 });
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | RepositorioException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar mascotas: " + ex.getMessage());
         }
     }
@@ -185,6 +188,10 @@ public class MisAnimales extends JFrame {
         if (rs.next()) {
             return rs.getInt("idPROPIETARIO");
         }
+    } catch (RepositorioException ex) {
+        JOptionPane.showMessageDialog(this, "No se pudo consultar el propietario: " + ex.getMessage(),
+                "Error de conexión", JOptionPane.ERROR_MESSAGE);
+        return 0;
     } catch (SQLException ignored) {}
     return 1;
     }

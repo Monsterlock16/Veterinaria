@@ -1,7 +1,9 @@
 package Vista.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,12 +41,25 @@ public class gstanimal extends JFrame {
 
     public gstanimal() {
         setTitle("Gestión de Animales");
-        setSize(700, 700);
+        setSize(760, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
+        setResizable(false);
+        setLayout(new BorderLayout(12, 12));
+        TemaVeterinaria.aplicarIcono(this);
+
+        Color fondoGeneral = TemaVeterinaria.FONDO;
+        Color fondoPanel = TemaVeterinaria.PANEL;
+        Color fondoInputs = TemaVeterinaria.INPUT;
+        Color principal = TemaVeterinaria.PRIMARIO;
+        Color principalOscuro = TemaVeterinaria.PRIMARIO_OSCURO;
+        Color acento = TemaVeterinaria.SECUNDARIO;
+        Color texto = TemaVeterinaria.TEXTO;
+
+        getContentPane().setBackground(fondoGeneral);
 
         JPanel formularioPanel = new JPanel(new GridLayout(9, 2, 10, 10));
+        formularioPanel.setBackground(fondoPanel);
         formularioPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         txtNombre_propetario = new JTextField();
@@ -58,42 +73,86 @@ public class gstanimal extends JFrame {
         spfechaNacimiento = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH));
         spfechaNacimiento.setEditor(new JSpinner.DateEditor(spfechaNacimiento, "yyyy-MM-dd"));
 
-        formularioPanel.add(new JLabel("Nombre del propietario:"));
+        aplicarEstiloCampo(txtNombre_propetario, fondoInputs, texto);
+        aplicarEstiloCampo(txtNombre, fondoInputs, texto);
+        aplicarEstiloCampo(txtEspecie, fondoInputs, texto);
+        aplicarEstiloCampo(txtRaza, fondoInputs, texto);
+        aplicarEstiloCampo((JTextField) txtPeso.getEditor().getComponent(0), fondoInputs, texto);
+        aplicarEstiloCampo(txtColor, fondoInputs, texto);
+        aplicarEstiloCombo(txtSexo, fondoInputs, texto, principal);
+        aplicarEstiloCombo(txtEstado_salud, fondoInputs, texto, principal);
+        aplicarEstiloSpinner(spfechaNacimiento, fondoInputs, texto);
+
+        JLabel lblNombrePropietario = new JLabel("Nombre del propietario:");
+        JLabel lblNombreAnimal = new JLabel("Nombre del animal:");
+        JLabel lblEspecie = new JLabel("Especie:");
+        JLabel lblRaza = new JLabel("Raza:");
+        JLabel lblPeso = new JLabel("Peso (kg):");
+        JLabel lblColor = new JLabel("Color:");
+        JLabel lblFechaNacimiento = new JLabel("Fecha de nacimiento:");
+        JLabel lblSexo = new JLabel("Sexo:");
+        JLabel lblEstadoSalud = new JLabel("Estado de salud:");
+
+        estiloEtiqueta(lblNombrePropietario, texto, principal);
+        estiloEtiqueta(lblNombreAnimal, texto, principal);
+        estiloEtiqueta(lblEspecie, texto, principal);
+        estiloEtiqueta(lblRaza, texto, principal);
+        estiloEtiqueta(lblPeso, texto, principal);
+        estiloEtiqueta(lblColor, texto, principal);
+        estiloEtiqueta(lblFechaNacimiento, texto, principal);
+        estiloEtiqueta(lblSexo, texto, principal);
+        estiloEtiqueta(lblEstadoSalud, texto, principal);
+
+        formularioPanel.add(lblNombrePropietario);
         formularioPanel.add(txtNombre_propetario);
-        formularioPanel.add(new JLabel("Nombre del animal:"));
+        formularioPanel.add(lblNombreAnimal);
         formularioPanel.add(txtNombre);
-        formularioPanel.add(new JLabel("Especie:"));
+        formularioPanel.add(lblEspecie);
         formularioPanel.add(txtEspecie);
-        formularioPanel.add(new JLabel("Raza:"));
+        formularioPanel.add(lblRaza);
         formularioPanel.add(txtRaza);
-        formularioPanel.add(new JLabel("Peso (kg):"));
+        formularioPanel.add(lblPeso);
         formularioPanel.add(txtPeso);
-        formularioPanel.add(new JLabel("Color:"));
+        formularioPanel.add(lblColor);
         formularioPanel.add(txtColor);
-        formularioPanel.add(new JLabel("Fecha de nacimiento:"));
+        formularioPanel.add(lblFechaNacimiento);
         formularioPanel.add(spfechaNacimiento);
-        formularioPanel.add(new JLabel("Sexo:"));
+        formularioPanel.add(lblSexo);
         formularioPanel.add(txtSexo);
-        formularioPanel.add(new JLabel("Estado de salud:"));
+        formularioPanel.add(lblEstadoSalud);
         formularioPanel.add(txtEstado_salud);
 
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        botones.setBackground(fondoGeneral);
         JButton btnGuardar = new JButton("Guardar");
         JButton btnLimpiar = new JButton("Limpiar");
         JButton btnEliminar = new JButton("Eliminar");
         JButton btnActualizar = new JButton("Actualizar");
+
+        estilizarBoton(btnGuardar, principal, Color.WHITE);
+        estilizarBoton(btnLimpiar, acento, Color.WHITE);
+        estilizarBoton(btnEliminar, new Color(190, 79, 79), Color.WHITE);
+        estilizarBoton(btnActualizar, principalOscuro, Color.WHITE);
+
         botones.add(btnGuardar);
         botones.add(btnLimpiar);
         botones.add(btnEliminar);
         botones.add(btnActualizar);
-
 
         modelo = new DefaultTableModel(new String[]{
             "ID", "Nombre del propietario", "Nombre del animal", "Especie", "Raza",
             "Peso (kg)", "Color", "Fecha de nacimiento", "Sexo", "Estado de salud"
         }, 0);
         tabla = new JTable(modelo);
+        tabla.setRowHeight(28);
+        tabla.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tabla.setSelectionBackground(new Color(158, 214, 201));
+        tabla.setSelectionForeground(texto);
+        tabla.getTableHeader().setBackground(principal);
+        tabla.getTableHeader().setForeground(Color.WHITE);
+        tabla.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
         JScrollPane scrollTabla = new JScrollPane(tabla);
+        scrollTabla.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         add(formularioPanel, BorderLayout.NORTH);
         add(scrollTabla, BorderLayout.CENTER);
@@ -104,13 +163,55 @@ public class gstanimal extends JFrame {
         btnEliminar.addActionListener(e -> eliminarAnimal());
         btnActualizar.addActionListener(e -> actualizarAnimal());
 
-         tabla.getSelectionModel().addListSelectionListener(e -> {
-        if (!e.getValueIsAdjusting()) {
-            mostrarAnimalSeleccionado();
-    
-        }
-    });
+        tabla.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                mostrarAnimalSeleccionado();
+            }
+        });
+        TemaVeterinaria.aplicarEstiloVentana(this);
     }
+
+    private void aplicarEstiloCampo(JTextField campo, Color fondo, Color texto) {
+        campo.setBackground(fondo);
+        campo.setForeground(texto);
+        campo.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(176, 196, 190), 1),
+            BorderFactory.createEmptyBorder(6, 8, 6, 8)
+        ));
+        campo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    }
+
+    private void aplicarEstiloSpinner(JSpinner spinner, Color fondo, Color texto) {
+        spinner.setBackground(fondo);
+        spinner.setForeground(texto);
+        spinner.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        spinner.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(176, 196, 190), 1),
+            BorderFactory.createEmptyBorder(4, 6, 4, 6)
+        ));
+    }
+
+    private void aplicarEstiloCombo(JComboBox<?> combo, Color fondo, Color texto, Color borde) {
+        combo.setBackground(fondo);
+        combo.setForeground(texto);
+        combo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        combo.setBorder(BorderFactory.createLineBorder(borde, 1));
+    }
+
+    private void estiloEtiqueta(JLabel etiqueta, Color texto, Color colorMarca) {
+        etiqueta.setForeground(texto);
+        etiqueta.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        etiqueta.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
+    }
+
+    private void estilizarBoton(JButton boton, Color fondo, Color texto) {
+        boton.setBackground(fondo);
+        boton.setForeground(texto);
+        boton.setFocusPainted(false);
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        boton.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
+    }
+
     private void registrarAnimal() {
         String nombrePropietario = txtNombre_propetario.getText().trim();
         String nombreAnimal = txtNombre.getText().trim();

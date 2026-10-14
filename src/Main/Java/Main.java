@@ -3,13 +3,14 @@ import java.sql.DatabaseMetaData;
 
 import javax.swing.SwingUtilities;
 
-import Controlador.LoginPresenter;
 import Modelo.repositorio.ConexionBD;
+import Vista.gui.TemaVeterinaria;
 import Vista.gui.login;
 
 public class Main {
 
     public static void main(String[] args) {
+        TemaVeterinaria.aplicarTemaGlobal();
         System.out.println("=== VERIFICACIÓN DE BASE DE DATOS Y APLICACIÓN ===");
 
         // 1. Probar la conexión básica
@@ -29,8 +30,6 @@ public class Main {
         System.out.println("\n🚀 Iniciando interfaz gráfica...");
         SwingUtilities.invokeLater(() -> {
             login vistaLogin = new login();
-            @SuppressWarnings("unused")
-            LoginPresenter loginPresenter = new LoginPresenter(vistaLogin);
             vistaLogin.setVisible(true);
         });
     }

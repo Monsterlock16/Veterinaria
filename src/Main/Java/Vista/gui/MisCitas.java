@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
+import Modelo.repositorio.RepositorioException;
 
 public class MisCitas extends JFrame {
     private final DefaultTableModel modelo = new DefaultTableModel(new String[]{"ID Cita", "Mascota", "Fecha", "Hora", "Motivo", "Estado"}, 0);
@@ -20,6 +21,7 @@ public class MisCitas extends JFrame {
     private final DatosPropietario datos;
 
     public MisCitas(DatosPropietario datos) {
+        TemaVeterinaria.aplicarIcono(this);
         this.datos = datos;
 
         setTitle("Mis Citas Programadas");
@@ -29,6 +31,7 @@ public class MisCitas extends JFrame {
         setLayout(new BorderLayout());
 
         add(new JScrollPane(tabla), BorderLayout.CENTER);
+        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarCitas();
     }
 
@@ -52,7 +55,7 @@ public class MisCitas extends JFrame {
                     rs.getTime("hora"), rs.getString("motivo"), rs.getString("estado")
                 });
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | RepositorioException ex) {
             JOptionPane.showMessageDialog(this, "Error al consultar citas: " + ex.getMessage());
         }
     }
@@ -70,6 +73,10 @@ public class MisCitas extends JFrame {
         if (rs.next()) {
             return rs.getInt("idPROPIETARIO");
         }
+    } catch (RepositorioException ex) {
+        JOptionPane.showMessageDialog(this, "No se pudo consultar el propietario: " + ex.getMessage(),
+                "Error de conexión", JOptionPane.ERROR_MESSAGE);
+        return 0;
     } catch (SQLException ignored) {}
     return 1;
     }

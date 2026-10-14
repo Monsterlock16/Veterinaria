@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
+import Vista.gui.TemaVeterinaria;
 
 public class Gstconsultas extends JFrame {
 
@@ -46,6 +47,7 @@ public class Gstconsultas extends JFrame {
 
     // Constructor con el parámetro del usuario autenticado
     public Gstconsultas(String usuarioVet) {
+        TemaVeterinaria.aplicarIcono(this);
         this.usuarioVet = usuarioVet;
 
         setTitle("Gestión de Consultas Médicas - Veterinario (" + usuarioVet + ")");
@@ -73,6 +75,7 @@ public class Gstconsultas extends JFrame {
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
 
+        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarAnimalesCombo();
         cargarConsultasBD();
     }

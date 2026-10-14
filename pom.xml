@@ -33,6 +33,11 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/Main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <!-- Plugin para poder ejecutar 'Main' desde el entorno Maven -->
             <plugin>

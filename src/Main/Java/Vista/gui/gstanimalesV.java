@@ -64,11 +64,12 @@ public class gstanimalesV extends JFrame {
     private final AnimalRepositorio animalRepo = new AnimalRepositorio();
     private final PropietarioRepositorio propietarioRepo = new PropietarioRepositorio();
 
-    private static final Color COLOR_PRIMARIO = new Color(0, 102, 153);
-    private static final Color COLOR_FONDO = new Color(245, 247, 250);
-    private static final Color COLOR_TEXTO = new Color(40, 50, 60);
+    private static final Color COLOR_PRIMARIO = TemaVeterinaria.PRIMARIO;
+    private static final Color COLOR_FONDO = TemaVeterinaria.FONDO;
+    private static final Color COLOR_TEXTO = TemaVeterinaria.TEXTO;
 
     public gstanimalesV() {
+        TemaVeterinaria.aplicarIcono(this);
         setTitle("Gestión de animales - Veterinario");
         setSize(950, 650);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -137,6 +138,8 @@ public class gstanimalesV extends JFrame {
             }
         });
 
+        TemaVeterinaria.aplicarEstiloVentana(this);
+
         // Cargar los registros guardados en phpMyAdmin al abrir la ventana
         cargarTablaDesdeBD();
     }
@@ -180,7 +183,12 @@ public class gstanimalesV extends JFrame {
                 });
             }
         } catch (Exception e) {
-            System.err.println("Error al cargar animales desde BD: " + e.getMessage());
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudieron cargar los animales: " + e.getMessage(),
+                    "Error de conexión",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 

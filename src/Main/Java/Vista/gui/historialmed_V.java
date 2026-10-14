@@ -19,6 +19,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
+import Modelo.repositorio.RepositorioException;
 
 public class historialmed_V extends JFrame {
 
@@ -29,6 +30,7 @@ public class historialmed_V extends JFrame {
     private final JTable tabla = new JTable(modelo);
 
     public historialmed_V() {
+        TemaVeterinaria.aplicarIcono(this);
         setTitle("Historial Clínico de Mascotas");
         setSize(850, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -46,6 +48,7 @@ public class historialmed_V extends JFrame {
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
 
+        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarAnimalesCombo();
     }
 
@@ -62,8 +65,9 @@ public class historialmed_V extends JFrame {
                 cbAnimales.addItem(item);
                 mapaAnimales.put(item, rs.getInt("idANIMAL"));
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar lista de animales: " + ex.getMessage());
+        } catch (SQLException | RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar lista de animales: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -92,8 +96,9 @@ public class historialmed_V extends JFrame {
                     rs.getString("diagnostico"), rs.getString("tratamiento"), rs.getString("observaciones")
                 });
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar expediente: " + ex.getMessage());
+        } catch (SQLException | RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar expediente: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

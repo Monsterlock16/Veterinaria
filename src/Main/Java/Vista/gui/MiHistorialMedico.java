@@ -19,6 +19,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
+import Modelo.repositorio.RepositorioException;
 
 public class MiHistorialMedico extends JFrame {
     private final JComboBox<String> cbMascotas = new JComboBox<>();
@@ -28,6 +29,7 @@ public class MiHistorialMedico extends JFrame {
     private final DatosPropietario datos;
 
     public MiHistorialMedico(DatosPropietario datos) {
+        TemaVeterinaria.aplicarIcono(this);
         this.datos = datos;
 
         setTitle("Historial Médico de mis Mascotas");
@@ -47,6 +49,7 @@ public class MiHistorialMedico extends JFrame {
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
 
+        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarMascotasCombo();
     }
 
@@ -67,7 +70,7 @@ public class MiHistorialMedico extends JFrame {
                 cbMascotas.addItem(item);
                 mapaMascotas.put(item, rs.getInt("idANIMAL"));
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | RepositorioException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar mascotas: " + ex.getMessage());
         }
     }
@@ -92,7 +95,7 @@ public class MiHistorialMedico extends JFrame {
                     rs.getString("diagnostico"), rs.getString("tratamiento"), rs.getString("observaciones")
                 });
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | RepositorioException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar historial: " + ex.getMessage());
         }
     }
@@ -110,6 +113,10 @@ public class MiHistorialMedico extends JFrame {
         if (rs.next()) {
             return rs.getInt("idPROPIETARIO");
         }
+    } catch (RepositorioException ex) {
+        JOptionPane.showMessageDialog(this, "No se pudo consultar el propietario: " + ex.getMessage(),
+                "Error de conexión", JOptionPane.ERROR_MESSAGE);
+        return 0;
     } catch (SQLException ignored) {}
     return 1;
     }

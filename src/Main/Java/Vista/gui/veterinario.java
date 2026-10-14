@@ -20,13 +20,15 @@ public class veterinario extends JFrame {
     private final JButton btnCitas;
     private final JButton btnConsultas;
     private final JButton btnHistorial;
+    private final JButton btnCerrarSesion;
 
-    private static final Color COLOR_PRIMARIO = new Color(0, 102, 153);
-    private static final Color COLOR_FONDO = new Color(245, 247, 250);
-    private static final Color COLOR_TARJETA = Color.WHITE;
-    private static final Color COLOR_TEXTO = new Color(30, 40, 50);
+    private static final Color COLOR_PRIMARIO = TemaVeterinaria.PRIMARIO;
+    private static final Color COLOR_FONDO = TemaVeterinaria.FONDO;
+    private static final Color COLOR_TARJETA = TemaVeterinaria.INPUT;
+    private static final Color COLOR_TEXTO = TemaVeterinaria.TEXTO;
 
     public veterinario(String usuario) {
+        TemaVeterinaria.aplicarIcono(this);
         setTitle("Sistema Veterinario - Módulo principal");
         setSize(700, 480);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,13 +49,19 @@ public class veterinario extends JFrame {
         lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblSubtitulo.setForeground(new Color(100, 110, 120));
 
-        panelHeader.add(lblBienvenida, BorderLayout.NORTH);
-        panelHeader.add(lblSubtitulo, BorderLayout.SOUTH);
+        JPanel textosHeader = new JPanel(new GridLayout(2, 1, 0, 4));
+        textosHeader.setOpaque(false);
+        textosHeader.add(lblBienvenida);
+        textosHeader.add(lblSubtitulo);
 
-        btnAnimales = crearBotonOpcion("🐾 Gestionar animales");
-        btnCitas = crearBotonOpcion("📅 Gestionar citas");
-        btnConsultas = crearBotonOpcion("🩺 Gestionar consultas");
-        btnHistorial = crearBotonOpcion("📋 Historial médico");
+        btnCerrarSesion = Navegacion.crearBotonCerrarSesion();
+        panelHeader.add(textosHeader, BorderLayout.CENTER);
+        panelHeader.add(btnCerrarSesion, BorderLayout.EAST);
+
+        btnAnimales = crearBotonOpcion("Gestionar animales");
+        btnCitas = crearBotonOpcion("Gestionar citas");
+        btnConsultas = crearBotonOpcion("Gestionar consultas");
+        btnHistorial = crearBotonOpcion("Historial médico");
 
         JPanel menu = new JPanel(new GridLayout(2, 2, 20, 20));
         menu.setOpaque(false);
@@ -66,6 +74,7 @@ public class veterinario extends JFrame {
         panelPrincipal.add(menu, BorderLayout.CENTER);
 
         add(panelPrincipal);
+        TemaVeterinaria.aplicarEstiloVentana(this);
     }
 
     private JButton crearBotonOpcion(String texto) {
@@ -99,7 +108,15 @@ public class veterinario extends JFrame {
         return btnHistorial;
     }
 
+    public JButton getBtnCerrarSesion() {
+        return btnCerrarSesion;
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new veterinario("Jane Doe").setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            veterinario vista = new veterinario("Jane Doe");
+            new Controlador.VeterinarioPresenter(vista, "Jane Doe");
+            vista.setVisible(true);
+        });
     }
 }

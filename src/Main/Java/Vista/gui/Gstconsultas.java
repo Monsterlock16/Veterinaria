@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
+import Modelo.repositorio.RepositorioException;
 
 public class Gstconsultas extends JFrame {
 
@@ -46,6 +47,7 @@ public class Gstconsultas extends JFrame {
 
     // Constructor con el parámetro del usuario autenticado
     public Gstconsultas(String usuarioVet) {
+        TemaVeterinaria.aplicarIcono(this);
         this.usuarioVet = usuarioVet;
 
         setTitle("Gestión de Consultas Médicas - Veterinario (" + usuarioVet + ")");
@@ -73,6 +75,7 @@ public class Gstconsultas extends JFrame {
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
 
+        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarAnimalesCombo();
         cargarConsultasBD();
     }
@@ -90,8 +93,9 @@ public class Gstconsultas extends JFrame {
                 cbAnimales.addItem(item);
                 mapaAnimales.put(item, rs.getInt("idANIMAL"));
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar lista de animales: " + ex.getMessage());
+        } catch (SQLException | RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar lista de animales: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -128,8 +132,9 @@ public class Gstconsultas extends JFrame {
             JOptionPane.showMessageDialog(this, "¡Consulta guardada exitosamente!");
             cargarConsultasBD();
             limpiar();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al registrar la consulta: " + ex.getMessage());
+        } catch (SQLException | RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al registrar la consulta: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -142,6 +147,10 @@ public class Gstconsultas extends JFrame {
             if (rs.next()) {
                 return rs.getInt("idHISTORIAL_MEDICO");
             }
+        } catch (RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al consultar el historial médico: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
+            return 0;
         } catch (SQLException ignored) {}
 
         String sqlInsert = "INSERT INTO historial_medico (ANIMAL_idANIMAL, fecha_creacion) VALUES (?, ?)";
@@ -152,6 +161,10 @@ public class Gstconsultas extends JFrame {
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) return rs.getInt(1);
+        } catch (RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al crear el historial médico: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
+            return 0;
         } catch (SQLException ignored) {}
 
         return 1;
@@ -170,6 +183,10 @@ public class Gstconsultas extends JFrame {
             if (rs.next()) {
                 return rs.getInt("idVETERINARIO");
             }
+        } catch (RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al consultar el veterinario actual: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
+            return 0;
         } catch (SQLException ignored) {}
 
         // Busca el último veterinario registrado si no encuentra por nombre de usuario
@@ -180,6 +197,10 @@ public class Gstconsultas extends JFrame {
             if (rs.next()) {
                 return rs.getInt("idVETERINARIO");
             }
+        } catch (RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al consultar los veterinarios: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
+            return 0;
         } catch (SQLException ignored) {}
 
         return 1;
@@ -202,8 +223,9 @@ public class Gstconsultas extends JFrame {
                     rs.getString("sintomas"), rs.getString("diagnostico"), rs.getString("tratamiento")
                 });
             }
-        } catch (SQLException ex) {
-            System.err.println("Error al cargar consultas: " + ex.getMessage());
+        } catch (SQLException | RepositorioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar consultas: " + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
 

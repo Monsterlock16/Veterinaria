@@ -57,7 +57,7 @@ public class LoginPresenter {
             if ("VETERINARIO".equalsIgnoreCase(rol)) {
                 veterinario vVista = new veterinario(usuarioLogueado.getUsuario());
                 @SuppressWarnings("unused")
-                veterinarioPresenter vPresenter = new veterinarioPresenter(vVista, usuarioLogueado.getUsuario());
+                VeterinarioPresenter vPresenter = new VeterinarioPresenter(vVista, usuarioLogueado.getUsuario());
                 vVista.setVisible(true);
             } else if ("PROPIETARIO".equalsIgnoreCase(rol)) {
                 propietario pVista = new propietario(usuarioLogueado.getUsuario());
@@ -74,16 +74,21 @@ public class LoginPresenter {
     }
 
     public boolean procesarRegistroUsuario(String nombres, String apellidos, String fechaNacimiento,
-                                           String documento, String correo, String usuario, 
+                                           String documento, String telefono, String correo, String usuario, 
                                            String contrasena, String rol, String especialidad) {
         if (nombres.isEmpty() || apellidos.isEmpty() || documento.isEmpty() || 
-            correo.isEmpty() || usuario.isEmpty() || contrasena.isEmpty()) {
+            telefono.isEmpty() || correo.isEmpty() || usuario.isEmpty() || contrasena.isEmpty()) {
             vista.mostrarMensaje("Todos los campos obligatorios deben estar diligenciados.", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
+        if (telefono.length() > 20) {
+            vista.mostrarMensaje("El teléfono no puede superar los 20 caracteres.", "Teléfono no válido", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
         boolean exito = usuarioRepo.registrarNuevoUsuarioEnBD(
-            nombres, apellidos, fechaNacimiento, documento, correo, usuario, contrasena, rol, especialidad
+            nombres, apellidos, fechaNacimiento, documento, telefono, correo, usuario, contrasena, rol, especialidad
         );
 
         if (exito) {

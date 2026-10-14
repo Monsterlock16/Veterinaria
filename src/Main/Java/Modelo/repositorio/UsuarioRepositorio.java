@@ -43,7 +43,7 @@ public class UsuarioRepositorio {
     }
 
     public boolean registrarNuevoUsuarioEnBD(String nombres, String apellidos, String fechaNacimiento, 
-                                            String documento, String correo, String usuario, 
+                                            String documento, String telefono, String correo, String usuario, 
                                             String contrasena, String rol, String especialidad) {
         Connection cn = null;
         try {
@@ -52,13 +52,14 @@ public class UsuarioRepositorio {
 
             // 1. Guardar en PERSONA con la fecha capturada
             String sqlPersona = "INSERT INTO persona (nombres, apellidos, fecha_nacimiento, documento, telefono, correo) "
-                              + "VALUES (?, ?, ?, ?, '3000000000', ?)";
+                              + "VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement psPersona = cn.prepareStatement(sqlPersona, Statement.RETURN_GENERATED_KEYS);
             psPersona.setString(1, nombres);
             psPersona.setString(2, apellidos);
             psPersona.setString(3, (fechaNacimiento == null || fechaNacimiento.trim().isEmpty()) ? "1990-01-01" : fechaNacimiento.trim());
             psPersona.setString(4, documento);
-            psPersona.setString(5, correo);
+            psPersona.setString(5, telefono);
+            psPersona.setString(6, correo);
             psPersona.executeUpdate();
 
             ResultSet rsP = psPersona.getGeneratedKeys();
