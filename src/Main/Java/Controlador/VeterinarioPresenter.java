@@ -5,17 +5,17 @@ import javax.swing.JOptionPane;
 import Modelo.repositorio.RepositorioException;
 import Vista.gui.Gstcitas_V;
 import Vista.gui.Gstconsultas;
+import Vista.gui.Navegacion;
 import Vista.gui.gstanimalesV;
 import Vista.gui.historialmed_V;
-import Vista.gui.Navegacion;
 import Vista.gui.veterinario;
 
-public class VeterinarioPresenter {
+public class veterinarioPresenter {
     private final veterinario vista;
     private final String usuario;
 
     // Constructor principal
-    public VeterinarioPresenter(veterinario vista, String usuario) {
+    public veterinarioPresenter(veterinario vista, String usuario) {
         this.vista = vista;
         this.usuario = usuario;
         
@@ -23,7 +23,7 @@ public class VeterinarioPresenter {
     }
 
     // Constructor sobrecargado por si se llama sin usuario explícito
-    public VeterinarioPresenter(veterinario vista) {
+    public veterinarioPresenter(veterinario vista) {
         this(vista, "veterinario");
     }
 
