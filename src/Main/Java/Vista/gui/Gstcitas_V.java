@@ -166,7 +166,7 @@ public class Gstcitas_V extends JFrame {
         int idAnimal = mapaAnimales.get(cbAnimales.getSelectedItem().toString());
         int idVet = mapaVeterinarios.get(cbVeterinarios.getSelectedItem().toString());
 
-        String sql = "INSERT INTO cita (ANIMAL_idANIMAL, VETERINARIO_idVETERINARIO, fecha_cita, hora_cita, motivo, estado) "
+        String sql = "INSERT INTO cita (ANIMAL_idANIMAL, VETERINARIO_idVETERINARIO, fecha, hora, motivo, estado) "
                    + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection cn = ConexionBD.obtener();
@@ -191,7 +191,7 @@ public class Gstcitas_V extends JFrame {
     private void cargarCitasBD() {
         modelo.setRowCount(0);
         String sql = "SELECT c.idCITA, a.nombre AS mascota, p.nombres AS vet_nombre, p.apellidos AS vet_apellido, "
-                   + "c.fecha_cita, c.hora_cita, c.motivo, c.estado "
+                   + "c.fecha, c.hora, c.motivo, c.estado "
                    + "FROM cita c "
                    + "JOIN animal a ON a.idANIMAL = c.ANIMAL_idANIMAL "
                    + "JOIN veterinario v ON v.idVETERINARIO = c.VETERINARIO_idVETERINARIO "
@@ -208,8 +208,8 @@ public class Gstcitas_V extends JFrame {
                     rs.getInt("idCITA"),
                     rs.getString("mascota"),
                     vetNombre,
-                    rs.getDate("fecha_cita"),
-                    rs.getTime("hora_cita"),
+                    rs.getDate("fecha"),
+                    rs.getTime("hora"),
                     rs.getString("motivo"),
                     rs.getString("estado")
                 });

@@ -57,7 +57,7 @@ public class LoginPresenter {
             if ("VETERINARIO".equalsIgnoreCase(rol)) {
                 veterinario vVista = new veterinario(usuarioLogueado.getUsuario());
                 @SuppressWarnings("unused")
-                veterinarioPresenter vPresenter = new veterinarioPresenter(vVista, usuarioLogueado.getUsuario());
+                VeterinarioPresenter vPresenter = new VeterinarioPresenter(vVista, usuarioLogueado.getUsuario());
                 vVista.setVisible(true);
             } else if ("PROPIETARIO".equalsIgnoreCase(rol)) {
                 propietario pVista = new propietario(usuarioLogueado.getUsuario());

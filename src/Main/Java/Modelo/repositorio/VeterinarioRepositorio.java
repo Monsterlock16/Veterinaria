@@ -9,9 +9,7 @@ import Modelo.entidades.Veterinario;
 
 public class VeterinarioRepositorio {
 
-    /**
-     * Busca un veterinario por su ID único en la BD
-     */
+    
     public Veterinario buscarPorId(int id) {
         String sql = "SELECT v.idVETERINARIO, v.especialidad, v.numero_licencia, "
                    + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
@@ -37,9 +35,7 @@ public class VeterinarioRepositorio {
         return null;
     }
 
-    /**
-     * Busca un veterinario por su nombre de usuario de inicio de sesión
-     */
+    
     public Veterinario buscarPorUsuario(String nombreUsuario) {
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) return null;
 

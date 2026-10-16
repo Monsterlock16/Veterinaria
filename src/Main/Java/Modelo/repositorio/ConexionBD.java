@@ -14,7 +14,6 @@ public final class ConexionBD {
     private ConexionBD() {
     }
 
-    /** Abre una conexion nueva. Quien la pida debe cerrarla (try-with-resources). */
     public static Connection obtener() {
         Properties p = cargarConfiguracion();
         String url = "jdbc:mysql://" + p.getProperty("host") + ":" + p.getProperty("puerto")

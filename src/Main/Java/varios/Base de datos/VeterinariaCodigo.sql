@@ -3,19 +3,15 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema dbo_Veterinaria
+-- Schema dbo_veterinaria
 -- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `dbo_veterinaria` DEFAULT CHARACTER SET utf8mb4 ;
+USE `dbo_veterinaria` ;
 
 -- -----------------------------------------------------
--- Schema dbo_Veterinaria
+-- Table `dbo_veterinaria`.`PERSONA`
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `dbo_Veterinaria` DEFAULT CHARACTER SET utf8mb4 ;
-USE `dbo_Veterinaria` ;
-
--- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`PERSONA`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`PERSONA` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`PERSONA` (
   `idPERSONA` INT NOT NULL AUTO_INCREMENT,
   `nombres` VARCHAR(100) NOT NULL,
   `apellidos` VARCHAR(100) NOT NULL,
@@ -30,9 +26,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`PROPIETARIO`
+-- Table `dbo_veterinaria`.`PROPIETARIO`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`PROPIETARIO` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`PROPIETARIO` (
   `idPROPIETARIO` INT NOT NULL AUTO_INCREMENT,
   `PERSONA_idPERSONA` INT NOT NULL,
   `fecha_registro` DATE NOT NULL,
@@ -41,16 +37,16 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`PROPIETARIO` (
   UNIQUE INDEX `uq_PROPIETARIO_PERSONA` (`PERSONA_idPERSONA` ASC),
   CONSTRAINT `fk_PROPIETARIO_PERSONA`
     FOREIGN KEY (`PERSONA_idPERSONA`)
-    REFERENCES `dbo_Veterinaria`.`PERSONA` (`idPERSONA`)
+    REFERENCES `dbo_veterinaria`.`PERSONA` (`idPERSONA`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`VETERINARIO`
+-- Table `dbo_veterinaria`.`VETERINARIO`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`VETERINARIO` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`VETERINARIO` (
   `idVETERINARIO` INT NOT NULL AUTO_INCREMENT,
   `PERSONA_idPERSONA` INT NOT NULL,
   `especialidad` VARCHAR(50) NOT NULL,
@@ -60,16 +56,16 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`VETERINARIO` (
   UNIQUE INDEX `numero_licencia_UNIQUE` (`numero_licencia` ASC),
   CONSTRAINT `fk_VETERINARIO_PERSONA1`
     FOREIGN KEY (`PERSONA_idPERSONA`)
-    REFERENCES `dbo_Veterinaria`.`PERSONA` (`idPERSONA`)
+    REFERENCES `dbo_veterinaria`.`PERSONA` (`idPERSONA`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`ESPECIE`
+-- Table `dbo_veterinaria`.`ESPECIE`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`ESPECIE` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`ESPECIE` (
   `idESPECIE` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`idESPECIE`),
@@ -78,9 +74,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`RAZA`
+-- Table `dbo_veterinaria`.`RAZA`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`RAZA` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`RAZA` (
   `idRAZA` INT NOT NULL AUTO_INCREMENT,
   `ESPECIE_idESPECIE` INT NOT NULL,
   `nombre` VARCHAR(80) NOT NULL,
@@ -89,16 +85,16 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`RAZA` (
   UNIQUE INDEX `uq_RAZA_id_especie` (`idRAZA` ASC, `ESPECIE_idESPECIE` ASC),
   CONSTRAINT `fk_RAZA_ESPECIE1`
     FOREIGN KEY (`ESPECIE_idESPECIE`)
-    REFERENCES `dbo_Veterinaria`.`ESPECIE` (`idESPECIE`)
+    REFERENCES `dbo_veterinaria`.`ESPECIE` (`idESPECIE`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`ANIMAL`
+-- Table `dbo_veterinaria`.`ANIMAL`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`ANIMAL` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`ANIMAL` (
   `idANIMAL` INT NOT NULL AUTO_INCREMENT,
   `PROPIETARIO_idPROPIETARIO` INT NOT NULL,
   `ESPECIE_idESPECIE` INT NOT NULL,
@@ -117,26 +113,26 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`ANIMAL` (
   INDEX `fk_ANIMAL_RAZA_ESPECIE_idx` (`RAZA_idRAZA` ASC, `ESPECIE_idESPECIE` ASC),
   CONSTRAINT `fk_ANIMAL_PROPIETARIO1`
     FOREIGN KEY (`PROPIETARIO_idPROPIETARIO`)
-    REFERENCES `dbo_Veterinaria`.`PROPIETARIO` (`idPROPIETARIO`)
+    REFERENCES `dbo_veterinaria`.`PROPIETARIO` (`idPROPIETARIO`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ANIMAL_ESPECIE1`
     FOREIGN KEY (`ESPECIE_idESPECIE`)
-    REFERENCES `dbo_Veterinaria`.`ESPECIE` (`idESPECIE`)
+    REFERENCES `dbo_veterinaria`.`ESPECIE` (`idESPECIE`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ANIMAL_RAZA_ESPECIE`
     FOREIGN KEY (`RAZA_idRAZA` , `ESPECIE_idESPECIE`)
-    REFERENCES `dbo_Veterinaria`.`RAZA` (`idRAZA` , `ESPECIE_idESPECIE`)
+    REFERENCES `dbo_veterinaria`.`RAZA` (`idRAZA` , `ESPECIE_idESPECIE`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`HISTORIAL_MEDICO`
+-- Table `dbo_veterinaria`.`HISTORIAL_MEDICO`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`HISTORIAL_MEDICO` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`HISTORIAL_MEDICO` (
   `idHISTORIAL_MEDICO` INT NOT NULL AUTO_INCREMENT,
   `ANIMAL_idANIMAL` INT NOT NULL,
   `fecha_creacion` DATE NOT NULL,
@@ -145,16 +141,16 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`HISTORIAL_MEDICO` (
   UNIQUE INDEX `uq_HISTORIAL_ANIMAL` (`ANIMAL_idANIMAL` ASC),
   CONSTRAINT `fk_HISTORIAL_MEDICO_ANIMAL1`
     FOREIGN KEY (`ANIMAL_idANIMAL`)
-    REFERENCES `dbo_Veterinaria`.`ANIMAL` (`idANIMAL`)
+    REFERENCES `dbo_veterinaria`.`ANIMAL` (`idANIMAL`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`CITA`
+-- Table `dbo_veterinaria`.`CITA`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`CITA` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`CITA` (
   `idCITA` INT NOT NULL AUTO_INCREMENT,
   `ANIMAL_idANIMAL` INT NOT NULL,
   `VETERINARIO_idVETERINARIO` INT NOT NULL,
@@ -167,26 +163,26 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`CITA` (
   UNIQUE INDEX `uq_cita_vet_fecha_hora` (`VETERINARIO_idVETERINARIO` ASC, `fecha` ASC, `hora` ASC),
   CONSTRAINT `fk_CITA_ANIMAL1`
     FOREIGN KEY (`ANIMAL_idANIMAL`)
-    REFERENCES `dbo_Veterinaria`.`ANIMAL` (`idANIMAL`)
+    REFERENCES `dbo_veterinaria`.`ANIMAL` (`idANIMAL`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CITA_VETERINARIO1`
     FOREIGN KEY (`VETERINARIO_idVETERINARIO`)
-    REFERENCES `dbo_Veterinaria`.`VETERINARIO` (`idVETERINARIO`)
+    REFERENCES `dbo_veterinaria`.`VETERINARIO` (`idVETERINARIO`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`CONSULTA`
+-- Table `dbo_veterinaria`.`CONSULTA`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`CONSULTA` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`CONSULTA` (
   `idCONSULTA` INT NOT NULL AUTO_INCREMENT,
   `HISTORIAL_MEDICO_idHISTORIAL_MEDICO` INT NOT NULL,
-  `CITA_idCITA` INT NOT NULL,
-  `fecha_consulta` DATE NOT NULL,
-  `hora_consulta` TIME NOT NULL,
+  `CITA_idCITA` INT NULL DEFAULT NULL,
+  `fecha_consulta` DATE NOT NULL DEFAULT (CURRENT_DATE),
+  `hora_consulta` TIME NOT NULL DEFAULT (CURRENT_TIME),
   `sintomas` VARCHAR(500) NOT NULL,
   `diagnostico` VARCHAR(500) NOT NULL,
   `tratamiento` VARCHAR(500) NOT NULL,
@@ -196,21 +192,21 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`CONSULTA` (
   UNIQUE INDEX `uq_consulta_cita` (`CITA_idCITA` ASC),
   CONSTRAINT `fk_CONSULTA_HISTORIAL_MEDICO1`
     FOREIGN KEY (`HISTORIAL_MEDICO_idHISTORIAL_MEDICO`)
-    REFERENCES `dbo_Veterinaria`.`HISTORIAL_MEDICO` (`idHISTORIAL_MEDICO`)
+    REFERENCES `dbo_veterinaria`.`HISTORIAL_MEDICO` (`idHISTORIAL_MEDICO`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CONSULTA_CITA1`
     FOREIGN KEY (`CITA_idCITA`)
-    REFERENCES `dbo_Veterinaria`.`CITA` (`idCITA`)
+    REFERENCES `dbo_veterinaria`.`CITA` (`idCITA`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`VACUNAS`
+-- Table `dbo_veterinaria`.`VACUNAS`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`VACUNAS` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`VACUNAS` (
   `idVACUNAS` INT NOT NULL AUTO_INCREMENT,
   `HISTORIAL_MEDICO_idHISTORIAL_MEDICO` INT NOT NULL,
   `CONSULTA_idCONSULTA` INT NULL DEFAULT NULL,
@@ -223,21 +219,21 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`VACUNAS` (
   INDEX `fk_VACUNAS_CONSULTA1_idx` (`CONSULTA_idCONSULTA` ASC),
   CONSTRAINT `fk_VACUNAS_HISTORIAL_MEDICO1`
     FOREIGN KEY (`HISTORIAL_MEDICO_idHISTORIAL_MEDICO`)
-    REFERENCES `dbo_Veterinaria`.`HISTORIAL_MEDICO` (`idHISTORIAL_MEDICO`)
+    REFERENCES `dbo_veterinaria`.`HISTORIAL_MEDICO` (`idHISTORIAL_MEDICO`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_VACUNAS_CONSULTA1`
     FOREIGN KEY (`CONSULTA_idCONSULTA`)
-    REFERENCES `dbo_Veterinaria`.`CONSULTA` (`idCONSULTA`)
+    REFERENCES `dbo_veterinaria`.`CONSULTA` (`idCONSULTA`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`MEDICAMENTO`
+-- Table `dbo_veterinaria`.`MEDICAMENTO`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`MEDICAMENTO` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`MEDICAMENTO` (
   `idMEDICAMENTO` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(150) NOT NULL,
   `presentacion` VARCHAR(100) NULL DEFAULT NULL,
@@ -247,9 +243,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`CONSULTA_MEDICAMENTO`
+-- Table `dbo_veterinaria`.`CONSULTA_MEDICAMENTO`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`CONSULTA_MEDICAMENTO` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`CONSULTA_MEDICAMENTO` (
   `idCONSULTA_MEDICAMENTO` INT NOT NULL AUTO_INCREMENT,
   `CONSULTA_idCONSULTA` INT NOT NULL,
   `MEDICAMENTO_idMEDICAMENTO` INT NOT NULL,
@@ -262,21 +258,21 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`CONSULTA_MEDICAMENTO` (
   INDEX `fk_CONSULTA_MEDICAMENTO_MEDICAMENTO1_idx` (`MEDICAMENTO_idMEDICAMENTO` ASC),
   CONSTRAINT `fk_CONSULTA_MEDICAMENTO_CONSULTA1`
     FOREIGN KEY (`CONSULTA_idCONSULTA`)
-    REFERENCES `dbo_Veterinaria`.`CONSULTA` (`idCONSULTA`)
+    REFERENCES `dbo_veterinaria`.`CONSULTA` (`idCONSULTA`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CONSULTA_MEDICAMENTO_MEDICAMENTO1`
     FOREIGN KEY (`MEDICAMENTO_idMEDICAMENTO`)
-    REFERENCES `dbo_Veterinaria`.`MEDICAMENTO` (`idMEDICAMENTO`)
+    REFERENCES `dbo_veterinaria`.`MEDICAMENTO` (`idMEDICAMENTO`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_Veterinaria`.`USUARIO`
+-- Table `dbo_veterinaria`.`USUARIO`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`USUARIO` (
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`USUARIO` (
   `idUSUARIO` INT NOT NULL AUTO_INCREMENT,
   `usuario` VARCHAR(50) NOT NULL,
   `contrasena` VARCHAR(100) NOT NULL,
@@ -287,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `dbo_Veterinaria`.`USUARIO` (
   INDEX `fk_USUARIO_PERSONA1_idx` (`PERSONA_idPERSONA` ASC),
   CONSTRAINT `fk_USUARIO_PERSONA1`
     FOREIGN KEY (`PERSONA_idPERSONA`)
-    REFERENCES `dbo_Veterinaria`.`PERSONA` (`idPERSONA`)
+    REFERENCES `dbo_veterinaria`.`PERSONA` (`idPERSONA`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

@@ -9,12 +9,12 @@ import Vista.gui.gstanimalesV;
 import Vista.gui.historialmed_V;
 import Vista.gui.veterinario;
 
-public class veterinarioPresenter {
+public class VeterinarioPresenter {
     private final veterinario vista;
     private final String usuario;
 
     // Constructor principal
-    public veterinarioPresenter(veterinario vista, String usuario) {
+    public VeterinarioPresenter(veterinario vista, String usuario) {
         this.vista = vista;
         this.usuario = usuario;
         
@@ -22,7 +22,7 @@ public class veterinarioPresenter {
     }
 
     // Constructor sobrecargado por si se llama sin usuario explícito
-    public veterinarioPresenter(veterinario vista) {
+    public VeterinarioPresenter(veterinario vista) {
         this(vista, "veterinario");
     }
 

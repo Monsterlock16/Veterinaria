@@ -115,7 +115,7 @@ public class veterinario extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             veterinario vista = new veterinario("Jane Doe");
-            new Controlador.veterinarioPresenter(vista, "Jane Doe");
+            new Controlador.VeterinarioPresenter(vista, "Jane Doe");
             vista.setVisible(true);
         });
     }
