@@ -23,6 +23,7 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+
 public class gstanimal extends JFrame {
     private int siguienteId = 1;
     private final JTextField txtNombre_propetario;
@@ -35,7 +36,6 @@ public class gstanimal extends JFrame {
     private final JComboBox<String> txtSexo;
     private final JComboBox<String> txtEstado_salud;
 
-
     private final DefaultTableModel modelo;
     private final JTable tabla;
 
@@ -46,7 +46,6 @@ public class gstanimal extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BorderLayout(12, 12));
-        TemaVeterinaria.aplicarIcono(this);
 
         Color fondoGeneral = TemaVeterinaria.FONDO;
         Color fondoPanel = TemaVeterinaria.PANEL;
@@ -93,15 +92,15 @@ public class gstanimal extends JFrame {
         JLabel lblSexo = new JLabel("Sexo:");
         JLabel lblEstadoSalud = new JLabel("Estado de salud:");
 
-        estiloEtiqueta(lblNombrePropietario, texto, principal);
-        estiloEtiqueta(lblNombreAnimal, texto, principal);
-        estiloEtiqueta(lblEspecie, texto, principal);
-        estiloEtiqueta(lblRaza, texto, principal);
-        estiloEtiqueta(lblPeso, texto, principal);
-        estiloEtiqueta(lblColor, texto, principal);
-        estiloEtiqueta(lblFechaNacimiento, texto, principal);
-        estiloEtiqueta(lblSexo, texto, principal);
-        estiloEtiqueta(lblEstadoSalud, texto, principal);
+        estiloEtiqueta(lblNombrePropietario, texto);
+        estiloEtiqueta(lblNombreAnimal, texto);
+        estiloEtiqueta(lblEspecie, texto);
+        estiloEtiqueta(lblRaza, texto);
+        estiloEtiqueta(lblPeso, texto);
+        estiloEtiqueta(lblColor, texto);
+        estiloEtiqueta(lblFechaNacimiento, texto);
+        estiloEtiqueta(lblSexo, texto);
+        estiloEtiqueta(lblEstadoSalud, texto);
 
         formularioPanel.add(lblNombrePropietario);
         formularioPanel.add(txtNombre_propetario);
@@ -168,6 +167,8 @@ public class gstanimal extends JFrame {
                 mostrarAnimalSeleccionado();
             }
         });
+
+        TemaVeterinaria.aplicarIcono(this);
         TemaVeterinaria.aplicarEstiloVentana(this);
     }
 
@@ -198,7 +199,7 @@ public class gstanimal extends JFrame {
         combo.setBorder(BorderFactory.createLineBorder(borde, 1));
     }
 
-    private void estiloEtiqueta(JLabel etiqueta, Color texto, Color colorMarca) {
+    private void estiloEtiqueta(JLabel etiqueta, Color texto) {
         etiqueta.setForeground(texto);
         etiqueta.setFont(new Font("Segoe UI", Font.BOLD, 12));
         etiqueta.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
@@ -248,6 +249,7 @@ public class gstanimal extends JFrame {
         txtSexo.setSelectedIndex(0);
         txtEstado_salud.setSelectedIndex(0);
     }
+
     private void eliminarAnimal() {
         int filaSeleccionada = tabla.getSelectedRow();
         if (filaSeleccionada != -1) {
@@ -256,6 +258,7 @@ public class gstanimal extends JFrame {
             JOptionPane.showMessageDialog(this, "Seleccione un animal para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void actualizarAnimal() {
         int filaSeleccionada = tabla.getSelectedRow();
         if (filaSeleccionada != -1) {
@@ -306,8 +309,6 @@ public class gstanimal extends JFrame {
             txtEstado_salud.setSelectedItem(modelo.getValueAt(filaSeleccionada, 9).toString());
         }
     }
-
-   
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new gstanimal().setVisible(true));

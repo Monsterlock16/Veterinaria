@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         TemaVeterinaria.aplicarTemaGlobal();
-        System.out.println("=== VERIFICACIÓN DE BASE DE DATOS Y APLICACIÓN ===");
+        System.out.println("VERIFICACIÓN DE BASE DE DATOS Y APLICACIÓN");
 
         // 1. Probar la conexión básica
         try (Connection cn = ConexionBD.obtener()) {
@@ -19,7 +19,6 @@ public class Main {
             System.out.println("Conexión exitosa a MySQL!");
             System.out.println("   Base de Datos: " + cn.getCatalog());
             System.out.println("   Motor: " + metaData.getDatabaseProductName() + " " + metaData.getDatabaseProductVersion());
-            System.out.println("------------------------------------------");
         } catch (Exception e) {
             System.err.println("ERROR AL CONECTAR A LA BASE DE DATOS:");
             System.err.println(e.getMessage());
@@ -27,7 +26,7 @@ public class Main {
         }
 
         // 2. Iniciar la interfaz gráfica del sistema (Login bajo MVP)
-        System.out.println("\n🚀 Iniciando interfaz gráfica...");
+        System.out.println("\nIniciando interfaz gráfica...");
         SwingUtilities.invokeLater(() -> {
             login vistaLogin = new login();
             vistaLogin.setVisible(true);

@@ -8,7 +8,6 @@ import java.time.LocalTime;
 import javax.swing.JOptionPane;
 
 import Modelo.repositorio.ConexionBD;
-import Vista.gui.Gstconsultas;
 
 public class GstconsultasPresenter {
     private final Gstconsultas vista;

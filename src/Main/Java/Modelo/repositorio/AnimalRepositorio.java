@@ -27,7 +27,7 @@ public class AnimalRepositorio {
 
     private final PropietarioRepositorio propietarios = new PropietarioRepositorio();
 
-    /** El id lo asigna MySQL (AUTO_INCREMENT) y se copia al objeto Animal. */
+    /**El id lo asigna MySQL (AUTO_INCREMENT) y se copia al objeto Animal. */
     public void registrar(Animal a) {
         if (a == null || (a.getIdAnimal() > 0 && buscarPorId(a.getIdAnimal()) != null)) {
             return;
