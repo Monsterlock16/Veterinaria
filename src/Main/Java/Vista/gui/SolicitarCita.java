@@ -1,144 +1,181 @@
 package Vista.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.HashMap;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import Modelo.repositorio.ConexionBD;
-import Modelo.repositorio.RepositorioException;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 public class SolicitarCita extends JFrame {
     private final JComboBox<String> cbMascotas = new JComboBox<>();
+    private final JComboBox<String> cbVeterinarios = new JComboBox<>();
     private final HashMap<String, Integer> mapaMascotas = new HashMap<>();
-    private final JTextField txtFecha = new JTextField(LocalDate.now().toString());
-    private final JTextField txtHora = new JTextField("10:00");
+    private final HashMap<String, Integer> mapaVeterinarios = new HashMap<>();
+
+    private final JLabel lblFechaSeleccionada = new JLabel("Fecha seleccionada: Ninguna", SwingConstants.CENTER);
+    private LocalDate fechaSeleccionada = null;
+    private final JPanel panelDiasCalendario = new JPanel();
+    
+    private final JComboBox<String> cbHorasDisponibles = new JComboBox<>();
     private final JTextField txtMotivo = new JTextField();
+    
+    private final JButton btnVolver = new JButton("← Volver al menú");
+    private final JButton btnSolicitar = new JButton("Agendar Cita");
     private final DatosPropietario datos;
+    private Runnable alSeleccionarFecha;
 
     public SolicitarCita(DatosPropietario datos) {
         TemaVeterinaria.aplicarIcono(this);
         this.datos = datos;
 
-        setTitle("Solicitar Cita Médica");
-        setSize(450, 300);
+        setTitle("Solicitar Cita Médica - Sistema Veterinario");
+        setSize(720, 640);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(5, 2, 10, 10));
+        setLayout(new BorderLayout(10, 10));
 
-        add(new JLabel("Seleccionar Mascota:")); add(cbMascotas);
-        add(new JLabel("Fecha (YYYY-MM-DD):")); add(txtFecha);
-        add(new JLabel("Hora (HH:mm):")); add(txtHora);
-        add(new JLabel("Motivo:")); add(txtMotivo);
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+        panelPrincipal.setBorder(new EmptyBorder(15, 20, 15, 20));
+        panelPrincipal.setBackground(TemaVeterinaria.FONDO);
 
-        JButton btnSolicitar = new JButton("Agendar Cita");
+        // 1. Mascota
+        JPanel pnlMascota = new JPanel(new BorderLayout(10, 0));
+        pnlMascota.setOpaque(false);
+        pnlMascota.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        pnlMascota.add(new JLabel("Seleccionar Mascota:"), BorderLayout.WEST);
+        pnlMascota.add(cbMascotas, BorderLayout.CENTER);
+        panelPrincipal.add(pnlMascota);
+        panelPrincipal.add(javax.swing.Box.createRigidArea(new Dimension(0, 10)));
+
+        // 2. Veterinario
+        JPanel pnlVet = new JPanel(new BorderLayout(10, 0));
+        pnlVet.setOpaque(false);
+        pnlVet.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        pnlVet.add(new JLabel("Seleccionar Veterinario:"), BorderLayout.WEST);
+        pnlVet.add(cbVeterinarios, BorderLayout.CENTER);
+        panelPrincipal.add(pnlVet);
+        panelPrincipal.add(javax.swing.Box.createRigidArea(new Dimension(0, 10)));
+
+        // 3. Calendario Visual
+        JPanel pnlFechaContainer = new JPanel(new BorderLayout(5, 5));
+        pnlFechaContainer.setOpaque(false);
+        pnlFechaContainer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
+        pnlFechaContainer.add(new JLabel("Seleccione el Día Disponible (Mes Actual):"), BorderLayout.NORTH);
+        
+        panelDiasCalendario.setLayout(new GridLayout(0, 7, 5, 5));
+        panelDiasCalendario.setOpaque(false);
+        construirCalendarioVisual();
+        pnlFechaContainer.add(panelDiasCalendario, BorderLayout.CENTER);
+        
+        lblFechaSeleccionada.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblFechaSeleccionada.setForeground(new Color(0, 102, 153));
+        pnlFechaContainer.add(lblFechaSeleccionada, BorderLayout.SOUTH);
+        panelPrincipal.add(pnlFechaContainer);
+        panelPrincipal.add(javax.swing.Box.createRigidArea(new Dimension(0, 10)));
+
+        // 4. Franja Horaria
+        JPanel pnlHoraContainer = new JPanel(new BorderLayout(10, 0));
+        pnlHoraContainer.setOpaque(false);
+        pnlHoraContainer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        pnlHoraContainer.add(new JLabel("Horas Disponibles (AM / PM):"), BorderLayout.WEST);
+        pnlHoraContainer.add(cbHorasDisponibles, BorderLayout.CENTER);
+        panelPrincipal.add(pnlHoraContainer);
+        panelPrincipal.add(javax.swing.Box.createRigidArea(new Dimension(0, 10)));
+
+        // 5. Motivo
+        JPanel pnlMotivo = new JPanel(new BorderLayout(10, 0));
+        pnlMotivo.setOpaque(false);
+        pnlMotivo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        pnlMotivo.add(new JLabel("Motivo de Consulta:"), BorderLayout.WEST);
+        pnlMotivo.add(txtMotivo, BorderLayout.CENTER);
+        panelPrincipal.add(pnlMotivo);
+        panelPrincipal.add(javax.swing.Box.createRigidArea(new Dimension(0, 15)));
+
+        // 6. Botones
+        JPanel pnlBotones = new JPanel(new GridLayout(1, 2, 15, 0));
+        pnlBotones.setOpaque(false);
+        pnlBotones.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+        btnVolver.setBackground(new Color(240, 242, 245));
+        btnVolver.setForeground(new Color(45, 55, 65));
+        btnVolver.setFocusPainted(false);
+
         btnSolicitar.setBackground(new Color(0, 102, 153));
         btnSolicitar.setForeground(Color.WHITE);
-        btnSolicitar.addActionListener(e -> agendarCitaBD());
+        btnSolicitar.setFocusPainted(false);
 
-        add(new JLabel()); add(btnSolicitar);
+        pnlBotones.add(btnVolver);
+        pnlBotones.add(btnSolicitar);
+        panelPrincipal.add(pnlBotones);
 
+        add(panelPrincipal, BorderLayout.CENTER);
         TemaVeterinaria.aplicarEstiloVentana(this);
-        cargarMascotasCombo();
     }
 
-    private void cargarMascotasCombo() {
-        cbMascotas.removeAllItems();
-        mapaMascotas.clear();
+    private void construirCalendarioVisual() {
+        panelDiasCalendario.removeAll();
+        LocalDate hoy = LocalDate.now();
+        YearMonth ym = YearMonth.from(hoy);
+        int diasEnMes = ym.lengthOfMonth();
 
-        int idProp = obtenerIdPropietarioActual();
-        if (idProp == 0) return;
+        String[] diasSemana = {"Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"};
+        for (String d : diasSemana) {
+            JLabel lbl = new JLabel(d, SwingConstants.CENTER);
+            lbl.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            panelDiasCalendario.add(lbl);
+        }
 
-        String sql = "SELECT idANIMAL, nombre FROM animal WHERE PROPIETARIO_idPROPIETARIO = ?";
-        try (Connection cn = ConexionBD.obtener();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setInt(1, idProp);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String item = rs.getString("nombre") + " (ID: " + rs.getInt("idANIMAL") + ")";
-                cbMascotas.addItem(item);
-                mapaMascotas.put(item, rs.getInt("idANIMAL"));
+        for (int dia = 1; dia <= diasEnMes; dia++) {
+            LocalDate fechaDia = LocalDate.of(ym.getYear(), ym.getMonth(), dia);
+            JButton btnDia = new JButton(String.valueOf(dia));
+            btnDia.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            btnDia.setFocusPainted(false);
+
+            if (fechaDia.isBefore(hoy)) {
+                btnDia.setEnabled(false);
+                btnDia.setBackground(new Color(220, 220, 220));
+            } else {
+                btnDia.setBackground(Color.WHITE);
+                final LocalDate seleccion = fechaDia;
+                btnDia.addActionListener(e -> {
+                    fechaSeleccionada = seleccion;
+                    lblFechaSeleccionada.setText("Fecha seleccionada: " + fechaSeleccionada.toString());
+                    if (alSeleccionarFecha != null) {
+                        alSeleccionarFecha.run();
+                    }
+                });
             }
-        } catch (SQLException | RepositorioException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar mascotas: " + ex.getMessage());
+            panelDiasCalendario.add(btnDia);
         }
+        panelDiasCalendario.revalidate();
+        panelDiasCalendario.repaint();
     }
 
-    private void agendarCitaBD() {
-        if (cbMascotas.getSelectedItem() == null) {
-            JOptionPane.showMessageDialog(this, "No tiene mascotas registradas para agendar una cita.");
-            return;
-        }
-
-        int idVet = 0;
-        try (Connection cn = ConexionBD.obtener();
-             Statement st = cn.createStatement();
-             ResultSet rs = st.executeQuery("SELECT idVETERINARIO FROM veterinario LIMIT 1")) {
-            if (rs.next()) {
-                idVet = rs.getInt(1);
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al verificar veterinarios: " + ex.getMessage());
-            return;
-        }
-
-        if (idVet == 0) {
-            JOptionPane.showMessageDialog(this, "No hay veterinarios disponibles en el sistema.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int idAnimalSeleccionado = mapaMascotas.get(cbMascotas.getSelectedItem().toString());
-
-        String sql = "INSERT INTO cita (ANIMAL_idANIMAL, VETERINARIO_idVETERINARIO, fecha, hora, motivo, estado) "
-                   + "VALUES (?, ?, ?, ?, ?, 'programada')";
-
-        try (Connection cn = ConexionBD.obtener();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setInt(1, idAnimalSeleccionado);
-            ps.setInt(2, idVet);
-            ps.setObject(3, LocalDate.parse(txtFecha.getText().trim()));
-            ps.setObject(4, LocalTime.parse(txtHora.getText().trim()));
-            ps.setString(5, txtMotivo.getText().trim());
-
-            ps.executeUpdate();
-            JOptionPane.showMessageDialog(this, "¡Cita agendada con éxito!");
-            dispose();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al agendar cita: " + ex.getMessage());
-        }
-    }
-
- private int obtenerIdPropietarioActual() {
-    String sql = "SELECT pr.idPROPIETARIO "
-               + "FROM propietario pr "
-               + "JOIN usuario u ON u.PERSONA_idPERSONA = pr.PERSONA_idPERSONA "
-               + "ORDER BY pr.idPROPIETARIO DESC LIMIT 1";
-
-    try (Connection cn = ConexionBD.obtener();
-         PreparedStatement ps = cn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        
-        if (rs.next()) {
-            return rs.getInt("idPROPIETARIO");
-        }
-    } catch (RepositorioException ex) {
-        JOptionPane.showMessageDialog(this, "No se pudo consultar el propietario: " + ex.getMessage(),
-                "Error de conexión", JOptionPane.ERROR_MESSAGE);
-        return 0;
-    } catch (SQLException ignored) {}
-    return 1;
-    }
+    /** El presentador se registra aqui para recalcular las horas cuando se elige un dia. */
+    public void setAlSeleccionarFecha(Runnable accion) { this.alSeleccionarFecha = accion; }
+    public DatosPropietario getDatos() { return datos; }
+    public JComboBox<String> getCbMascotas() { return cbMascotas; }
+    public JComboBox<String> getCbVeterinarios() { return cbVeterinarios; }
+    public JComboBox<String> getCbHorasDisponibles() { return cbHorasDisponibles; }
+    public HashMap<String, Integer> getMapaMascotas() { return mapaMascotas; }
+    public HashMap<String, Integer> getMapaVeterinarios() { return mapaVeterinarios; }
+    public LocalDate getFechaSeleccionada() { return fechaSeleccionada; }
+    public JLabel getLblFechaSeleccionada() { return lblFechaSeleccionada; }
+    public JTextField getTxtMotivo() { return txtMotivo; }
+    public JButton getBtnVolver() { return btnVolver; }
+    public JButton getBtnSolicitar() { return btnSolicitar; }
 }

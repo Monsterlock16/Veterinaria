@@ -13,7 +13,6 @@ import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,9 +22,9 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
-import Vista.gui.TemaVeterinaria;
 
-public class Gstconsultas extends JFrame {
+// Cambiamos de JFrame a JPanel para que pueda integrarse fluidamente en el CardLayout
+public class Gstconsultas extends JPanel {
 
     private final JComboBox<String> cbAnimales = new JComboBox<>();
     private final HashMap<String, Integer> mapaAnimales = new HashMap<>();
@@ -40,20 +39,16 @@ public class Gstconsultas extends JFrame {
 
     private final String usuarioVet;
 
-    // Constructor sin parámetros para compatibilidad con VeterinarioPresenter
+    // Constructor sin parámetros
     public Gstconsultas() {
         this("veterinario");
     }
 
     // Constructor con el parámetro del usuario autenticado
     public Gstconsultas(String usuarioVet) {
-        TemaVeterinaria.aplicarIcono(this);
         this.usuarioVet = usuarioVet;
 
-        setTitle("Gestión de Consultas Médicas - Veterinario (" + usuarioVet + ")");
-        setSize(850, 550);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        // Configurar layout principal del panel
         setLayout(new BorderLayout(10, 10));
 
         JPanel form = new JPanel(new GridLayout(5, 2, 8, 8));
@@ -75,7 +70,6 @@ public class Gstconsultas extends JFrame {
         add(top, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
 
-        TemaVeterinaria.aplicarEstiloVentana(this);
         cargarAnimalesCombo();
         cargarConsultasBD();
     }
@@ -175,7 +169,6 @@ public class Gstconsultas extends JFrame {
             }
         } catch (SQLException ignored) {}
 
-        // Busca el último veterinario registrado si no encuentra por nombre de usuario
         String sqlFallback = "SELECT idVETERINARIO FROM veterinario ORDER BY idVETERINARIO DESC LIMIT 1";
         try (Connection cn = ConexionBD.obtener();
              PreparedStatement ps = cn.prepareStatement(sqlFallback);

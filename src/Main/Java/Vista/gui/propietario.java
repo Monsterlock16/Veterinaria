@@ -5,10 +5,12 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -54,7 +56,34 @@ public class propietario extends JFrame {
         textosHeader.add(lblBienvenida);
         textosHeader.add(lblSubtitulo);
 
-        btnCerrarSesion = Navegacion.crearBotonCerrarSesion();
+        // Inicialización del botón de cerrar sesión de forma autónoma y limpia
+        btnCerrarSesion = new JButton("Cerrar sesión");
+        btnCerrarSesion.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnCerrarSesion.setForeground(new Color(160, 55, 55));
+        btnCerrarSesion.setBackground(Color.WHITE);
+        btnCerrarSesion.setFocusPainted(false);
+        btnCerrarSesion.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCerrarSesion.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(235, 205, 205)),
+                BorderFactory.createEmptyBorder(9, 14, 9, 14)
+        ));
+        
+        // Acción de cierre de sesión integrado directamente
+        btnCerrarSesion.addActionListener(e -> {
+            int confirmacion = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Deseas cerrar tu sesión?",
+                    "Confirmar cierre de sesión",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+            if (confirmacion == JOptionPane.YES_OPTION) {
+                login ventanaLogin = new login();
+                ventanaLogin.setVisible(true);
+                this.dispose();
+            }
+        });
+
         panelHeader.add(textosHeader, BorderLayout.CENTER);
         panelHeader.add(btnCerrarSesion, BorderLayout.EAST);
 

@@ -1,6 +1,15 @@
 package Controlador;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.awt.Font;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import Modelo.repositorio.RepositorioException;
 import Vista.gui.DatosPropietario;
@@ -8,7 +17,6 @@ import Vista.gui.MiHistorialMedico;
 import Vista.gui.MisAnimales;
 import Vista.gui.MisCitas;
 import Vista.gui.SolicitarCita;
-import Vista.gui.Navegacion;
 import Vista.gui.propietario;
 
 public class PropietarioPresenter {
@@ -19,7 +27,6 @@ public class PropietarioPresenter {
         this.vista = vista;
         this.datos = new DatosPropietario(usuario);
 
-        Navegacion.agregarAccionCerrarSesion(this.vista.getBtnCerrarSesion(), this.vista);
         vista.getBtnMisAnimales().addActionListener(e -> ejecutarApertura("Mis animales", this::abrirMisAnimales));
         vista.getBtnSolicitarCita().addActionListener(e -> ejecutarApertura("Solicitar cita", this::abrirSolicitudCita));
         vista.getBtnMisCitas().addActionListener(e -> ejecutarApertura("Mis citas", this::abrirMisCitas));
@@ -42,25 +49,56 @@ public class PropietarioPresenter {
 
     private void abrirMisAnimales() {
         MisAnimales ventana = new MisAnimales(datos);
-        Navegacion.agregarBotonVolver(ventana, vista);
+        agregarBotonVolver(ventana, vista);
         ventana.setVisible(true);
+        vista.dispose();
     }
 
-    private void abrirSolicitudCita() {
+  private void abrirSolicitudCita() {
         SolicitarCita ventana = new SolicitarCita(datos);
-        Navegacion.agregarBotonVolver(ventana, vista);
         new SolicitarCitaPresenter(ventana).mostrar();
+        vista.dispose();
     }
 
     private void abrirMisCitas() {
         MisCitas ventana = new MisCitas(datos);
-        Navegacion.agregarBotonVolver(ventana, vista);
+        agregarBotonVolver(ventana, vista);
         ventana.setVisible(true);
+        vista.dispose();
     }
 
     private void abrirMiHistorial() {
         MiHistorialMedico ventana = new MiHistorialMedico(datos);
-        Navegacion.agregarBotonVolver(ventana, vista);
+        agregarBotonVolver(ventana, vista);
         ventana.setVisible(true);
+        vista.dispose();
+    }
+
+    private void agregarBotonVolver(JFrame ventanaActual, JFrame menuAnterior) {
+        if (!(ventanaActual.getLayout() instanceof BorderLayout)) {
+            ventanaActual.setLayout(new BorderLayout());
+        }
+
+        JButton botonVolver = new JButton("←  Volver al menú");
+        botonVolver.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        botonVolver.setBackground(new Color(240, 242, 245));
+        botonVolver.setForeground(new Color(45, 55, 65));
+        botonVolver.setFocusPainted(false);
+        botonVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        botonVolver.addActionListener(e -> {
+            ventanaActual.dispose();
+            menuAnterior.setVisible(true);
+            menuAnterior.toFront();
+        });
+
+        JPanel panelSur = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        panelSur.setOpaque(false);
+        panelSur.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 10, 10, 10));
+        panelSur.add(botonVolver);
+        
+        ventanaActual.add(panelSur, BorderLayout.SOUTH);
+        ventanaActual.pack();
+        ventanaActual.setLocationRelativeTo(null);
     }
 }

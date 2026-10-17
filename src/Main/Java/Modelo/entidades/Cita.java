@@ -5,7 +5,7 @@ import java.time.LocalTime;
 
 public class Cita {
 
-    public enum EstadoCita {PROGRAMADA, ATENDIDA, CANCELADA}
+    public enum EstadoCita {PROGRAMADA, ATENDIDA, CANCELADA, PENDIENTE}
 
     private int idCita;
     private Animal animal;

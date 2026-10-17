@@ -4,12 +4,35 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import Modelo.entidades.Veterinario;
 
 public class VeterinarioRepositorio {
 
-    
+    public List<Veterinario> obtenerTodos() {
+        String sql = "SELECT v.idVETERINARIO, v.especialidad, v.numero_licencia, "
+                   + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
+                   + "FROM veterinario v "
+                   + "JOIN persona p ON p.idPERSONA = v.PERSONA_idPERSONA "
+                   + "LEFT JOIN usuario u ON u.PERSONA_idPERSONA = p.idPERSONA "
+                   + "ORDER BY v.idVETERINARIO";
+
+        List<Veterinario> veterinarios = new ArrayList<>();
+        try (Connection cn = ConexionBD.obtener();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                veterinarios.add(mapearVeterinario(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener veterinarios: " + e.getMessage());
+        }
+
+        return veterinarios;
+    }
+
     public Veterinario buscarPorId(int id) {
         String sql = "SELECT v.idVETERINARIO, v.especialidad, v.numero_licencia, "
                    + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
@@ -35,7 +58,6 @@ public class VeterinarioRepositorio {
         return null;
     }
 
-    
     public Veterinario buscarPorUsuario(String nombreUsuario) {
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) return null;
 

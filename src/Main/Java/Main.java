@@ -25,7 +25,7 @@ public class Main {
             return;
         }
 
-        // 2. Iniciar la interfaz gráfica del sistema (Login bajo MVP)
+        // 2. Iniciar la interfaz gráfica del sistema Felep(Login bajo MVP)
         System.out.println("\nIniciando interfaz gráfica...");
         SwingUtilities.invokeLater(() -> {
             login vistaLogin = new login();

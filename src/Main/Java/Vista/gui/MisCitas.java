@@ -24,7 +24,7 @@ public class MisCitas extends JFrame {
         TemaVeterinaria.aplicarIcono(this);
         this.datos = datos;
 
-        setTitle("Mis Citas Programadas");
+        setTitle("Mis Citas");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -35,49 +35,31 @@ public class MisCitas extends JFrame {
         cargarCitas();
     }
 
+    // Muestra solo las citas de las mascotas del propietario que inicio sesion
     private void cargarCitas() {
         modelo.setRowCount(0);
-        int idProp = obtenerIdPropietarioActual();
-        if (idProp == 0) return;
 
         String sql = "SELECT c.idCITA, a.nombre, c.fecha, c.hora, c.motivo, c.estado "
                    + "FROM cita c "
                    + "JOIN animal a ON a.idANIMAL = c.ANIMAL_idANIMAL "
-                   + "WHERE a.PROPIETARIO_idPROPIETARIO = ?";
+                   + "JOIN propietario pr ON pr.idPROPIETARIO = a.PROPIETARIO_idPROPIETARIO "
+                   + "JOIN usuario u ON u.PERSONA_idPERSONA = pr.PERSONA_idPERSONA "
+                   + "WHERE u.usuario = ? "
+                   + "ORDER BY c.fecha DESC, c.hora DESC";
 
         try (Connection cn = ConexionBD.obtener();
              PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setInt(1, idProp);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                modelo.addRow(new Object[]{
-                    rs.getInt("idCITA"), rs.getString("nombre"), rs.getDate("fecha"),
-                    rs.getTime("hora"), rs.getString("motivo"), rs.getString("estado")
-                });
+            ps.setString(1, datos.getNombre());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    modelo.addRow(new Object[]{
+                        rs.getInt("idCITA"), rs.getString("nombre"), rs.getDate("fecha"),
+                        rs.getTime("hora"), rs.getString("motivo"), rs.getString("estado")
+                    });
+                }
             }
         } catch (SQLException | RepositorioException ex) {
             JOptionPane.showMessageDialog(this, "Error al consultar citas: " + ex.getMessage());
         }
-    }
-
- private int obtenerIdPropietarioActual() {
-    String sql = "SELECT pr.idPROPIETARIO "
-               + "FROM propietario pr "
-               + "JOIN usuario u ON u.PERSONA_idPERSONA = pr.PERSONA_idPERSONA "
-               + "ORDER BY pr.idPROPIETARIO DESC LIMIT 1";
-
-    try (Connection cn = ConexionBD.obtener();
-         PreparedStatement ps = cn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        
-        if (rs.next()) {
-            return rs.getInt("idPROPIETARIO");
-        }
-    } catch (RepositorioException ex) {
-        JOptionPane.showMessageDialog(this, "No se pudo consultar el propietario: " + ex.getMessage(),
-                "Error de conexión", JOptionPane.ERROR_MESSAGE);
-        return 0;
-    } catch (SQLException ignored) {}
-    return 1;
     }
 }

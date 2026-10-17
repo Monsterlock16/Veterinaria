@@ -1,10 +1,18 @@
 package Controlador;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.awt.Font;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import Modelo.repositorio.RepositorioException;
 import Vista.gui.Gstcitas_V;
-import Vista.gui.Navegacion;
 import Vista.gui.gstanimalesV;
 import Vista.gui.historialmed_V;
 import Vista.gui.veterinario;
@@ -13,15 +21,12 @@ public class VeterinarioPresenter {
     private final veterinario vista;
     private final String usuario;
 
-    // Constructor principal
     public VeterinarioPresenter(veterinario vista, String usuario) {
         this.vista = vista;
         this.usuario = usuario;
-        
         inicializarEventos();
     }
 
-    // Constructor sobrecargado por si se llama sin usuario explícito
     public VeterinarioPresenter(veterinario vista) {
         this(vista, "veterinario");
     }
@@ -29,43 +34,71 @@ public class VeterinarioPresenter {
     private void inicializarEventos() {
         if (this.vista == null) return;
 
-        Navegacion.agregarAccionCerrarSesion(this.vista.getBtnCerrarSesion(), this.vista);
-
-        // 1. Botón Gestionar Animales
         if (this.vista.getBtnAnimales() != null) {
             this.vista.getBtnAnimales().addActionListener(e -> ejecutarApertura("Gestión de animales", () -> {
                 gstanimalesV ventanaAnimales = new gstanimalesV();
-                Navegacion.agregarBotonVolver(ventanaAnimales, this.vista);
+                agregarBotonVolver(ventanaAnimales, vista);
                 ventanaAnimales.setVisible(true);
+                vista.dispose();
             }));
         }
 
-        // 2. Botón Gestionar Citas
         if (this.vista.getBtnCitas() != null) {
             this.vista.getBtnCitas().addActionListener(e -> ejecutarApertura("Gestión de citas", () -> {
                 Gstcitas_V ventanaCitas = new Gstcitas_V();
-                Navegacion.agregarBotonVolver(ventanaCitas, this.vista);
+                new GstcitasPresenter(ventanaCitas, this.usuario);
+                agregarBotonVolver(ventanaCitas, vista);
                 ventanaCitas.setVisible(true);
+                vista.dispose();
             }));
         }
 
-        // 3. Botón Gestionar Consultas (Pasa el usuario autenticado para registrar en BD)
         if (this.vista.getBtnConsultas() != null) {
             this.vista.getBtnConsultas().addActionListener(e -> ejecutarApertura("Gestión de consultas", () -> {
-                Gstconsultas ventanaConsultas = new Gstconsultas(this.usuario);
-                Navegacion.agregarBotonVolver(ventanaConsultas, this.vista);
-                ventanaConsultas.setVisible(true);
+                // Envolvemos el panel Gstconsultas dentro de un JFrame para mostrarlo correctamente
+                JFrame ventanaContenedora = new JFrame("Gestión de Consultas");
+                ventanaContenedora.setSize(900, 600);
+                ventanaContenedora.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                ventanaContenedora.setLocationRelativeTo(null);
+                
+                Gstconsultas panelConsultas = new Gstconsultas(this.usuario);
+                ventanaContenedora.add(panelConsultas, BorderLayout.CENTER);
+
+                agregarBotonVolver(ventanaContenedora, vista);
+                ventanaContenedora.setVisible(true);
+                vista.dispose();
             }));
         }
 
-        // 4. Botón Ver Historial Médico
         if (this.vista.getBtnHistorial() != null) {
             this.vista.getBtnHistorial().addActionListener(e -> ejecutarApertura("Historial médico", () -> {
                 historialmed_V ventanaHistorial = new historialmed_V();
-                Navegacion.agregarBotonVolver(ventanaHistorial, this.vista);
+                agregarBotonVolver(ventanaHistorial, vista);
                 ventanaHistorial.setVisible(true);
+                vista.dispose();
             }));
         }
+    }
+
+    private void agregarBotonVolver(JFrame ventanaActual, JFrame menuAnterior) {
+        JButton botonVolver = new JButton("←  Volver al menú");
+        botonVolver.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        botonVolver.setBackground(new Color(240, 242, 245));
+        botonVolver.setForeground(new Color(45, 55, 65));
+        botonVolver.setFocusPainted(false);
+        botonVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        botonVolver.addActionListener(e -> {
+            ventanaActual.dispose();
+            menuAnterior.setVisible(true);
+            menuAnterior.toFront();
+        });
+
+        JPanel panelSur = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        panelSur.setOpaque(false);
+        panelSur.add(botonVolver);
+        
+        ventanaActual.add(panelSur, BorderLayout.SOUTH);
     }
 
     private void ejecutarApertura(String modulo, Runnable accion) {

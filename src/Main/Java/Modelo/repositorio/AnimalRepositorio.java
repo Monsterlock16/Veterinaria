@@ -63,6 +63,10 @@ public class AnimalRepositorio {
         return JdbcUtil.consultar(SELECT_BASE + "ORDER BY a.idANIMAL", ps -> { }, this::mapear);
     }
 
+    public List<Animal> obtenerTodos() {
+        return listarTodos();
+    }
+
     public Animal buscarPorId(int id) {
         return JdbcUtil.consultarUno(SELECT_BASE + "WHERE a.idANIMAL = ?", ps -> ps.setInt(1, id), this::mapear);
     }
@@ -77,6 +81,18 @@ public class AnimalRepositorio {
                 + "JOIN PERSONA p ON p.idPERSONA = pr.PERSONA_idPERSONA "
                 + "WHERE p.documento = ? ORDER BY a.idANIMAL";
         return JdbcUtil.consultar(sql, ps -> ps.setString(1, docPropietario), this::mapear);
+    }
+
+    // Mascotas del propietario que inicio sesion (por su nombre de usuario)
+    public List<Animal> buscarPorUsuario(String nombreUsuario) {
+        if (nombreUsuario == null) {
+            return new java.util.ArrayList<>();
+        }
+        String sql = SELECT_BASE
+                + "JOIN PROPIETARIO pr ON pr.idPROPIETARIO = a.PROPIETARIO_idPROPIETARIO "
+                + "JOIN USUARIO u ON u.PERSONA_idPERSONA = pr.PERSONA_idPERSONA "
+                + "WHERE u.usuario = ? ORDER BY a.idANIMAL";
+        return JdbcUtil.consultar(sql, ps -> ps.setString(1, nombreUsuario.trim()), this::mapear);
     }
 
     private Animal mapear(ResultSet rs) throws SQLException {
