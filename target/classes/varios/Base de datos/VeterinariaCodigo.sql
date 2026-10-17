@@ -299,6 +299,169 @@ CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`USUARIO` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- =====================================================
+-- Actualizacion de la base de datos (solo agrega, no borra nada)
+-- Ejecutar en phpMyAdmin: seleccionar dbo_veterinaria > pestaña SQL
+-- Se puede ejecutar mas de una vez sin problema.
+-- =====================================================
+USE dbo_veterinaria;
+
+-- 1) CITA: estado 'pendiente' y quitar el indice unico que dejaba
+--    bloqueadas las horas de las citas canceladas.
+--    (Primero se crea el indice normal porque la llave foranea lo necesita.)
+--    Nota: IF NOT EXISTS / IF EXISTS funcionan en MariaDB (XAMPP).
+ALTER TABLE cita ADD INDEX IF NOT EXISTS idx_cita_vet_fecha_hora (VETERINARIO_idVETERINARIO, fecha, hora);
+ALTER TABLE cita DROP INDEX IF EXISTS uq_cita_vet_fecha_hora;
+ALTER TABLE cita MODIFY estado ENUM('programada','atendida','cancelada','pendiente') NOT NULL;
+
+-- 2) ESPECIES para el desplegable (las que ya existan se ignoran)
+INSERT IGNORE INTO especie (nombre) VALUES
+  ('Canino'),
+  ('Felino'),
+  ('Ave'),
+  ('Roedor'),
+  ('Conejo'),
+  ('Reptil'),
+  ('Equino');
+
+-- 3) RAZAS para el desplegable, ligadas a su especie
+--    (las que ya existan se ignoran, por ejemplo Canino - Buldog)
+INSERT IGNORE INTO raza (ESPECIE_idESPECIE, nombre)
+SELECT e.idESPECIE, r.nombre
+FROM especie e
+JOIN (
+  SELECT 'Canino' AS especie, 'Criollo' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Buldog' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Labrador' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Golden Retriever' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Pastor Alemán' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Poodle' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Chihuahua' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Beagle' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Rottweiler' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Pitbull' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Schnauzer' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Husky Siberiano' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Shih Tzu' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Yorkshire Terrier' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Pug' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Cocker Spaniel' AS nombre
+  UNION ALL
+  SELECT 'Canino' AS especie, 'Dálmata' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Criollo' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Siamés' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Persa' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Angora' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Maine Coon' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Bengalí' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Ragdoll' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Azul Ruso' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Sphynx' AS nombre
+  UNION ALL
+  SELECT 'Felino' AS especie, 'Británico de Pelo Corto' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Canario' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Periquito' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Loro' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Cotorra' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Cacatúa' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Agapornis' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Ninfa' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Gallina' AS nombre
+  UNION ALL
+  SELECT 'Ave' AS especie, 'Paloma' AS nombre
+  UNION ALL
+  SELECT 'Roedor' AS especie, 'Hámster' AS nombre
+  UNION ALL
+  SELECT 'Roedor' AS especie, 'Cobayo' AS nombre
+  UNION ALL
+  SELECT 'Roedor' AS especie, 'Rata' AS nombre
+  UNION ALL
+  SELECT 'Roedor' AS especie, 'Ratón' AS nombre
+  UNION ALL
+  SELECT 'Roedor' AS especie, 'Jerbo' AS nombre
+  UNION ALL
+  SELECT 'Roedor' AS especie, 'Chinchilla' AS nombre
+  UNION ALL
+  SELECT 'Roedor' AS especie, 'Ardilla' AS nombre
+  UNION ALL
+  SELECT 'Conejo' AS especie, 'Cabeza de León' AS nombre
+  UNION ALL
+  SELECT 'Conejo' AS especie, 'Mini Lop' AS nombre
+  UNION ALL
+  SELECT 'Conejo' AS especie, 'Holandés' AS nombre
+  UNION ALL
+  SELECT 'Conejo' AS especie, 'Enano' AS nombre
+  UNION ALL
+  SELECT 'Conejo' AS especie, 'Angora' AS nombre
+  UNION ALL
+  SELECT 'Conejo' AS especie, 'Rex' AS nombre
+  UNION ALL
+  SELECT 'Conejo' AS especie, 'Gigante de Flandes' AS nombre
+  UNION ALL
+  SELECT 'Reptil' AS especie, 'Tortuga' AS nombre
+  UNION ALL
+  SELECT 'Reptil' AS especie, 'Iguana' AS nombre
+  UNION ALL
+  SELECT 'Reptil' AS especie, 'Gecko' AS nombre
+  UNION ALL
+  SELECT 'Reptil' AS especie, 'Serpiente' AS nombre
+  UNION ALL
+  SELECT 'Reptil' AS especie, 'Camaleón' AS nombre
+  UNION ALL
+  SELECT 'Reptil' AS especie, 'Dragón Barbudo' AS nombre
+  UNION ALL
+  SELECT 'Equino' AS especie, 'Criollo' AS nombre
+  UNION ALL
+  SELECT 'Equino' AS especie, 'Paso Fino' AS nombre
+  UNION ALL
+  SELECT 'Equino' AS especie, 'Pura Sangre' AS nombre
+  UNION ALL
+  SELECT 'Equino' AS especie, 'Cuarto de Milla' AS nombre
+  UNION ALL
+  SELECT 'Equino' AS especie, 'Andaluz' AS nombre
+  UNION ALL
+  SELECT 'Equino' AS especie, 'Percherón' AS nombre
+  UNION ALL
+  SELECT 'Equino' AS especie, 'Poni' AS nombre
+) r ON r.especie = e.nombre;
+
+-- 4) Comprobacion (opcional)
+SELECT e.nombre AS especie, COUNT(r.idRAZA) AS razas
+FROM especie e LEFT JOIN raza r ON r.ESPECIE_idESPECIE = e.idESPECIE
+GROUP BY e.idESPECIE, e.nombre ORDER BY e.nombre;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

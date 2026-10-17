@@ -56,6 +56,14 @@ public class AnimalRepositorio {
                 ps.executeUpdate();
                 a.setIdAnimal(JdbcUtil.claveGenerada(ps));
             }
+            // Todo animal nuevo tiene su expediente medico (si ya existe, no se duplica)
+            try (PreparedStatement psH = cn.prepareStatement(
+                    "INSERT IGNORE INTO HISTORIAL_MEDICO (ANIMAL_idANIMAL, fecha_creacion, observaciones) "
+                  + "VALUES (?, ?, 'Expediente inicial')")) {
+                psH.setInt(1, a.getIdAnimal());
+                psH.setObject(2, LocalDate.now());
+                psH.executeUpdate();
+            }
         });
     }
 
@@ -93,6 +101,39 @@ public class AnimalRepositorio {
                 + "JOIN USUARIO u ON u.PERSONA_idPERSONA = pr.PERSONA_idPERSONA "
                 + "WHERE u.usuario = ? ORDER BY a.idANIMAL";
         return JdbcUtil.consultar(sql, ps -> ps.setString(1, nombreUsuario.trim()), this::mapear);
+    }
+
+    /**
+     * Guarda los cambios de un animal que ya existe (nombre, especie, raza, fecha de nacimiento,
+     * sexo, peso, color y estado). El propietario no cambia. Devuelve false si el animal no existe.
+     */
+    public boolean actualizar(Animal a) {
+        if (a == null || a.getIdAnimal() <= 0) {
+            return false;
+        }
+        boolean[] encontrado = new boolean[1];
+        JdbcUtil.enTransaccion(cn -> {
+            int idEspecie = obtenerOCrearEspecie(cn, a.getRaza().getEspecie().getnombreEspecie());
+            int idRaza = obtenerOCrearRaza(cn, idEspecie, a.getRaza().getNombre());
+            a.getRaza().getEspecie().setidEspecie(idEspecie);
+            a.getRaza().setIdRaza(idRaza);
+
+            String sql = "UPDATE ANIMAL SET ESPECIE_idESPECIE = ?, RAZA_idRAZA = ?, nombre = ?, "
+                    + "fecha_nacimiento = ?, sexo = ?, peso = ?, color = ?, estado = ? WHERE idANIMAL = ?";
+            try (PreparedStatement ps = cn.prepareStatement(sql)) {
+                ps.setInt(1, idEspecie);
+                ps.setInt(2, idRaza);
+                ps.setString(3, a.getNombre());
+                ps.setObject(4, a.getFechaNacimiento());
+                ps.setString(5, sexoABd(a.getSexo()));
+                ps.setBigDecimal(6, a.getPeso());
+                ps.setString(7, a.getColor());
+                ps.setString(8, a.getEstado().name().toLowerCase(Locale.ROOT));
+                ps.setInt(9, a.getIdAnimal());
+                encontrado[0] = ps.executeUpdate() > 0;
+            }
+        });
+        return encontrado[0];
     }
 
     private Animal mapear(ResultSet rs) throws SQLException {

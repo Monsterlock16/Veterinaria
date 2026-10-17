@@ -16,7 +16,14 @@ import Modelo.repositorio.ConexionBD;
 import Modelo.repositorio.RepositorioException;
 
 public class MisCitas extends JFrame {
-    private final DefaultTableModel modelo = new DefaultTableModel(new String[]{"ID Cita", "Mascota", "Fecha", "Hora", "Motivo", "Estado"}, 0);
+    // La tabla es solo de consulta: las celdas no se pueden editar con doble clic
+    private final DefaultTableModel modelo = new DefaultTableModel(
+            new String[]{"ID Cita", "Mascota", "Fecha", "Hora", "Motivo", "Estado"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
     private final JTable tabla = new JTable(modelo);
     private final DatosPropietario datos;
 
