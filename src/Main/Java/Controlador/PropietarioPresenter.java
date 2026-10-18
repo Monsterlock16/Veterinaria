@@ -17,6 +17,7 @@ import Vista.gui.MiHistorialMedico;
 import Vista.gui.MisAnimales;
 import Vista.gui.MisCitas;
 import Vista.gui.SolicitarCita;
+import Vista.gui.TemaVeterinaria;
 import Vista.gui.propietario;
 
 public class PropietarioPresenter {
@@ -99,6 +100,6 @@ public class PropietarioPresenter {
         
         ventanaActual.add(panelSur, BorderLayout.SOUTH);
         ventanaActual.pack();
-        ventanaActual.setLocationRelativeTo(null);
+        TemaVeterinaria.aplicarEstiloVentana(ventanaActual);
     }
 }

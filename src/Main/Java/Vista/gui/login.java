@@ -5,12 +5,14 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,7 +31,7 @@ public class login extends JFrame {
 
     public login() {
         TemaVeterinaria.aplicarIcono(this);
-        setTitle("Acceso al Sistema - Veterinaria");
+        setTitle("PetAttention - Acceso al Sistema");
         setSize(480, 350);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -40,16 +42,22 @@ public class login extends JFrame {
         panelPrincipal.setBackground(TemaVeterinaria.FONDO);
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(26, 32, 24, 32));
 
-        JPanel panelEncabezado = new JPanel(new GridLayout(2, 1, 0, 5));
+        JPanel panelEncabezado = new JPanel(new BorderLayout(12, 0));
         panelEncabezado.setOpaque(false);
-        JLabel titulo = new JLabel("Clínica Veterinaria");
+        Image logoEscalado = getIconImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+        JLabel logo = new JLabel(new ImageIcon(logoEscalado));
+        JPanel panelTextoEncabezado = new JPanel(new GridLayout(2, 1, 0, 5));
+        panelTextoEncabezado.setOpaque(false);
+        JLabel titulo = new JLabel("PetAttention");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titulo.setForeground(TemaVeterinaria.PRIMARIO);
         JLabel subtitulo = new JLabel("Ingresa tus datos para continuar");
         subtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitulo.setForeground(TemaVeterinaria.TEXTO_SECUNDARIO);
-        panelEncabezado.add(titulo);
-        panelEncabezado.add(subtitulo);
+        panelTextoEncabezado.add(titulo);
+        panelTextoEncabezado.add(subtitulo);
+        panelEncabezado.add(logo, BorderLayout.WEST);
+        panelEncabezado.add(panelTextoEncabezado, BorderLayout.CENTER);
 
         JPanel panelCentral = new JPanel(new GridLayout(2, 2, 12, 14));
         panelCentral.setBackground(TemaVeterinaria.INPUT);
@@ -128,9 +136,24 @@ public class login extends JFrame {
     private void abrirVentanaRegistro() {
         JDialog dialogo = new JDialog(this, "Registro de Nuevo Usuario", true);
         TemaVeterinaria.aplicarIcono(dialogo);
-        dialogo.setSize(420, 540);
+        dialogo.setSize(500, 650);
+        dialogo.setResizable(false);
         dialogo.setLocationRelativeTo(this);
-        dialogo.setLayout(new GridLayout(11, 2, 8, 8));
+
+        JPanel panelPrincipal = new JPanel(new BorderLayout(0, 18));
+        panelPrincipal.setBackground(TemaVeterinaria.FONDO);
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(24, 28, 24, 28));
+
+        JPanel panelEncabezado = new JPanel(new GridLayout(2, 1, 0, 5));
+        panelEncabezado.setOpaque(false);
+        JLabel titulo = new JLabel("Crear cuenta");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        titulo.setForeground(TemaVeterinaria.PRIMARIO);
+        JLabel subtitulo = new JLabel("Completa tus datos para registrar un nuevo usuario");
+        subtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        subtitulo.setForeground(TemaVeterinaria.TEXTO_SECUNDARIO);
+        panelEncabezado.add(titulo);
+        panelEncabezado.add(subtitulo);
 
         JTextField txtNombres = new JTextField();
         JTextField txtApellidos = new JTextField();
@@ -143,20 +166,37 @@ public class login extends JFrame {
         JComboBox<String> cbxRol = new JComboBox<>(new String[]{"PROPIETARIO", "VETERINARIO"});
         JTextField txtEspecialidad = new JTextField();
 
-        dialogo.add(new JLabel(" Nombres:")); dialogo.add(txtNombres);
-        dialogo.add(new JLabel(" Apellidos:")); dialogo.add(txtApellidos);
-        dialogo.add(new JLabel(" Fecha Nac. (YYYY-MM-DD):")); dialogo.add(txtFechaNac);
-        dialogo.add(new JLabel(" Documento:")); dialogo.add(txtDoc);
-        dialogo.add(new JLabel(" Teléfono:")); dialogo.add(txtTelefono);
-        dialogo.add(new JLabel(" Correo:")); dialogo.add(txtCorreo);
-        dialogo.add(new JLabel(" Usuario:")); dialogo.add(txtUser);
-        dialogo.add(new JLabel(" Contraseña:")); dialogo.add(txtPass);
-        dialogo.add(new JLabel(" Rol:")); dialogo.add(cbxRol);
-        dialogo.add(new JLabel(" Especialidad (Solo Vet):")); dialogo.add(txtEspecialidad);
+        JPanel formulario = new JPanel(new GridLayout(10, 2, 12, 12));
+        formulario.setBackground(TemaVeterinaria.INPUT);
+        formulario.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(TemaVeterinaria.BORDE),
+                BorderFactory.createEmptyBorder(18, 18, 18, 18)
+        ));
+
+        String[] etiquetas = {
+            "Nombres:", "Apellidos:", "Fecha Nac. (YYYY-MM-DD):", "Documento:",
+            "Teléfono:", "Correo:", "Usuario:", "Contraseña:", "Rol:",
+            "Especialidad (solo veterinario):"
+        };
+        java.awt.Component[] campos = {
+            txtNombres, txtApellidos, txtFechaNac, txtDoc, txtTelefono,
+            txtCorreo, txtUser, txtPass, cbxRol, txtEspecialidad
+        };
+        for (int i = 0; i < etiquetas.length; i++) {
+            JLabel etiqueta = new JLabel(etiquetas[i]);
+            etiqueta.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            etiqueta.setForeground(TemaVeterinaria.TEXTO);
+            formulario.add(etiqueta);
+            formulario.add(campos[i]);
+            if (campos[i] instanceof JTextField campo) {
+                estilizarCampo(campo);
+            }
+        }
 
         JButton btnGuardar = new JButton("Guardar Usuario");
         btnGuardar.setBackground(TemaVeterinaria.PRIMARIO);
-        btnGuardar.setForeground(java.awt.Color.WHITE);
+        btnGuardar.setForeground(Color.WHITE);
+        estilizarBoton(btnGuardar, 13);
 
         btnGuardar.addActionListener(ev -> {
             boolean exito = presenter.procesarRegistroUsuario(
@@ -177,8 +217,14 @@ public class login extends JFrame {
             }
         });
 
-        dialogo.add(new JLabel());
-        dialogo.add(btnGuardar);
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        panelBotones.setOpaque(false);
+        panelBotones.add(btnGuardar);
+
+        panelPrincipal.add(panelEncabezado, BorderLayout.NORTH);
+        panelPrincipal.add(formulario, BorderLayout.CENTER);
+        panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
+        dialogo.setContentPane(panelPrincipal);
         TemaVeterinaria.aplicarEstiloVentana(dialogo);
         dialogo.setVisible(true);
     }

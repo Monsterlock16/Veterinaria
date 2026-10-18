@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import Modelo.repositorio.RepositorioException;
 import Vista.gui.Gstcitas_V;
+import Vista.gui.TemaVeterinaria;
 import Vista.gui.gstanimalesV;
 import Vista.gui.historialmed_V;
 import Vista.gui.veterinario;
@@ -59,12 +60,12 @@ public class VeterinarioPresenter {
                 JFrame ventanaContenedora = new JFrame("Gestión de Consultas");
                 ventanaContenedora.setSize(900, 600);
                 ventanaContenedora.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                ventanaContenedora.setLocationRelativeTo(null);
                 
                 Gstconsultas panelConsultas = new Gstconsultas(this.usuario);
                 ventanaContenedora.add(panelConsultas, BorderLayout.CENTER);
 
                 agregarBotonVolver(ventanaContenedora, vista);
+                TemaVeterinaria.aplicarEstiloVentana(ventanaContenedora);
                 ventanaContenedora.setVisible(true);
                 vista.dispose();
             }));

@@ -2,9 +2,12 @@ package Vista.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.Window;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -83,9 +87,19 @@ public final class TemaVeterinaria {
     }
 
     public static void aplicarEstiloVentana(Window ventana) {
-        if (ventana instanceof JFrame) {
-            ((JFrame) ventana).getContentPane().setBackground(FONDO);
+        if (ventana instanceof JFrame marco) {
+            marco.setResizable(false);
+            marco.getContentPane().setBackground(FONDO);
+        } else if (ventana instanceof JDialog dialogo) {
+            dialogo.setResizable(false);
         }
+        Dimension dimensionActual = ventana.getSize();
+        Rectangle espacioDisponible = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        int anchoAmpliado = Math.min((int) Math.round(dimensionActual.width * 1.2), espacioDisponible.width);
+        int altoAmpliado = Math.min((int) Math.round(dimensionActual.height * 1.2), espacioDisponible.height);
+        ventana.setSize(anchoAmpliado, altoAmpliado);
+        Component referencia = ventana instanceof JDialog dialogo ? dialogo.getOwner() : null;
+        ventana.setLocationRelativeTo(referencia);
         estilizarComponentes(ventana);
     }
 
