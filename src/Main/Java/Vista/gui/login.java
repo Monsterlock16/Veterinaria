@@ -13,6 +13,7 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -43,7 +45,7 @@ public class login extends JFrame {
     public login() {
         TemaVeterinaria.aplicarIcono(this);
         setTitle("PetAttention - Acceso al Sistema");
-        setSize(500, 560);
+        setSize(500, 620);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -55,17 +57,25 @@ public class login extends JFrame {
         tarjeta.setLayout(new GridBagLayout());
         tarjeta.setBorder(BorderFactory.createEmptyBorder(28, 36, 24, 36));
 
+        ImageIcon iconoLogo = new ImageIcon(getClass().getResource("/iconos/logo_veterinaria.png"));
+        Image imagenLogo = iconoLogo.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+        JLabel logo = new JLabel(new ImageIcon(imagenLogo));
+
         JLabel titulo = new JLabel("Clínica Veterinaria");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titulo.setForeground(TemaVeterinaria.PRIMARIO);
-        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel encabezado = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
+        encabezado.setOpaque(false);
+        encabezado.add(logo);
+        encabezado.add(titulo);
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 0, 4, 0);
-        tarjeta.add(titulo, gbc);
+        tarjeta.add(encabezado, gbc);
 
         JLabel subtitulo = new JLabel("Ingresa tus datos para continuar", SwingConstants.CENTER);
         subtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
