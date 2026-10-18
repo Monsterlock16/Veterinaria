@@ -146,7 +146,8 @@ public class login extends JFrame {
     private void abrirVentanaRegistro() {
         JDialog dialogo = new JDialog(this, "Registro de Nuevo Usuario", true);
         TemaVeterinaria.aplicarIcono(dialogo);
-        dialogo.setSize(600, 680);
+        dialogo.setSize(760, 820);
+        dialogo.setMinimumSize(new Dimension(700, 780));
         dialogo.setResizable(false);
         dialogo.setLocationRelativeTo(this);
 
@@ -206,6 +207,14 @@ public class login extends JFrame {
         btnGuardar.setBackground(TemaVeterinaria.PRIMARIO);
         btnGuardar.setForeground(Color.WHITE);
         estilizarBoton(btnGuardar, 13);
+        btnGuardar.setPreferredSize(new Dimension(180, 44));
+
+        JButton btnVolver = new JButton("Volver");
+        btnVolver.setBackground(TemaVeterinaria.INPUT);
+        btnVolver.setForeground(TemaVeterinaria.PRIMARIO);
+        estilizarBoton(btnVolver, 13);
+        btnVolver.setPreferredSize(new Dimension(130, 44));
+        btnVolver.addActionListener(ev -> dialogo.dispose());
 
         btnGuardar.addActionListener(ev -> {
             LocalDate nacimiento = selFecha.getFecha();
@@ -242,8 +251,9 @@ public class login extends JFrame {
             }
         });
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         panelBotones.setOpaque(false);
+        panelBotones.add(btnVolver);
         panelBotones.add(btnGuardar);
 
         panelPrincipal.add(encabezado, BorderLayout.NORTH);
