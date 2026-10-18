@@ -88,10 +88,10 @@ public class propietario extends JFrame {
         panelHeader.add(btnCerrarSesion, BorderLayout.EAST);
 
         // Menú Grid de Opciones
-        btnMisAnimales = crearBotonOpcion("Mis animales");
-        btnSolicitarCita = crearBotonOpcion("Solicitar cita");
-        btnMisCitas = crearBotonOpcion("Mis citas");
-        btnMiHistorial = crearBotonOpcion("Mi historial médico");
+        btnMisAnimales = crearBotonOpcion("Mis animales", BotonCategoria.Icono.PATA);
+        btnSolicitarCita = crearBotonOpcion("Solicitar cita", BotonCategoria.Icono.CALENDARIO);
+        btnMisCitas = crearBotonOpcion("Mis citas", BotonCategoria.Icono.CALENDARIO);
+        btnMiHistorial = crearBotonOpcion("Mi historial médico", BotonCategoria.Icono.DOCUMENTO);
 
         JPanel menu = new JPanel(new GridLayout(2, 2, 20, 20));
         menu.setOpaque(false);
@@ -127,18 +127,8 @@ public class propietario extends JFrame {
         return btnMiHistorial;
     }
 
-    private JButton crearBotonOpcion(String texto) {
-        JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        btn.setBackground(COLOR_TARJETA);
-        btn.setForeground(COLOR_TEXTO);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 225, 230), 1),
-                BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        ));
-        return btn;
+    private JButton crearBotonOpcion(String texto, BotonCategoria.Icono icono) {
+        return new BotonCategoria(texto, icono);
     }
 
     public static void main(String[] args) {

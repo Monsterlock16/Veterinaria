@@ -86,10 +86,10 @@ public class veterinario extends JFrame {
         panelHeader.add(textosHeader, BorderLayout.CENTER);
         panelHeader.add(btnCerrarSesion, BorderLayout.EAST);
 
-        btnAnimales = crearBotonOpcion("Gestionar animales");
-        btnCitas = crearBotonOpcion("Gestionar citas");
-        btnConsultas = crearBotonOpcion("Gestionar consultas");
-        btnHistorial = crearBotonOpcion("Historial médico");
+        btnAnimales = crearBotonOpcion("Gestionar animales", BotonCategoria.Icono.PATA);
+        btnCitas = crearBotonOpcion("Gestionar citas", BotonCategoria.Icono.CALENDARIO);
+        btnConsultas = crearBotonOpcion("Gestionar consultas", BotonCategoria.Icono.CRUZ);
+        btnHistorial = crearBotonOpcion("Historial médico", BotonCategoria.Icono.DOCUMENTO);
 
         JPanel menu = new JPanel(new GridLayout(2, 2, 20, 20));
         menu.setOpaque(false);
@@ -105,18 +105,8 @@ public class veterinario extends JFrame {
         TemaVeterinaria.aplicarEstiloVentana(this);
     }
 
-    private JButton crearBotonOpcion(String texto) {
-        JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        btn.setBackground(COLOR_TARJETA);
-        btn.setForeground(COLOR_TEXTO);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 225, 230), 1),
-                BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        ));
-        return btn;
+    private JButton crearBotonOpcion(String texto, BotonCategoria.Icono icono) {
+        return new BotonCategoria(texto, icono);
     }
 
     // Getters para el Presentador

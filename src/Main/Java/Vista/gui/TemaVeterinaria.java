@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -87,19 +86,9 @@ public final class TemaVeterinaria {
     }
 
     public static void aplicarEstiloVentana(Window ventana) {
-        if (ventana instanceof JFrame marco) {
-            marco.setResizable(false);
-            marco.getContentPane().setBackground(FONDO);
-        } else if (ventana instanceof JDialog dialogo) {
-            dialogo.setResizable(false);
+        if (ventana instanceof JFrame) {
+            ((JFrame) ventana).getContentPane().setBackground(FONDO);
         }
-        Dimension dimensionActual = ventana.getSize();
-        Rectangle espacioDisponible = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        int anchoAmpliado = Math.min((int) Math.round(dimensionActual.width * 1.2), espacioDisponible.width);
-        int altoAmpliado = Math.min((int) Math.round(dimensionActual.height * 1.2), espacioDisponible.height);
-        ventana.setSize(anchoAmpliado, altoAmpliado);
-        Component referencia = ventana instanceof JDialog dialogo ? dialogo.getOwner() : null;
-        ventana.setLocationRelativeTo(referencia);
         estilizarComponentes(ventana);
     }
 
@@ -178,6 +167,11 @@ public final class TemaVeterinaria {
     }
 
     private static void aplicarTabla(JTable tabla) {
+        // Solo consulta: las celdas no se editan con doble clic
+        tabla.setDefaultEditor(Object.class, null);
+        tabla.setDefaultEditor(Number.class, null);
+        tabla.setDefaultEditor(Boolean.class, null);
+        tabla.getTableHeader().setReorderingAllowed(false);
         tabla.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tabla.setForeground(TEXTO);
         tabla.setBackground(INPUT);
