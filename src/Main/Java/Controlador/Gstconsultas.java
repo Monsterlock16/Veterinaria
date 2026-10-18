@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import Modelo.repositorio.ConexionBD;
+import Vista.gui.TablaDetalle;
 
 // Cambiamos de JFrame a JPanel para que pueda integrarse fluidamente en el CardLayout
 public class Gstconsultas extends JPanel {
@@ -34,7 +35,7 @@ public class Gstconsultas extends JPanel {
     private final JTextField txtObservaciones = new JTextField();
 
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"ID Consulta", "Animal", "Fecha", "Síntomas", "Diagnóstico", "Tratamiento"}, 0);
+            new String[]{"ID Consulta", "Animal", "Fecha", "Síntomas", "Diagnóstico", "Tratamiento", "Observaciones"}, 0);
     private final JTable tabla = new JTable(modelo);
 
     private final String usuarioVet;
@@ -68,8 +69,9 @@ public class Gstconsultas extends JPanel {
         top.add(btnRegistrar, BorderLayout.SOUTH);
 
         add(top, BorderLayout.NORTH);
-        add(new JScrollPane(tabla), BorderLayout.CENTER);
+        add(TablaDetalle.crear(tabla), BorderLayout.CENTER);
 
+        tabla.setDefaultEditor(Object.class, null); // las consultas registradas no se pueden modificar
         cargarAnimalesCombo();
         cargarConsultasBD();
     }
@@ -183,7 +185,7 @@ public class Gstconsultas extends JPanel {
 
     private void cargarConsultasBD() {
         modelo.setRowCount(0);
-        String sql = "SELECT c.idCONSULTA, a.nombre, c.fecha_consulta, c.sintomas, c.diagnostico, c.tratamiento "
+        String sql = "SELECT c.idCONSULTA, a.nombre, c.fecha_consulta, c.sintomas, c.diagnostico, c.tratamiento, c.observaciones "
                    + "FROM consulta c "
                    + "JOIN historial_medico hm ON hm.idHISTORIAL_MEDICO = c.HISTORIAL_MEDICO_idHISTORIAL_MEDICO "
                    + "JOIN animal a ON a.idANIMAL = hm.ANIMAL_idANIMAL "
@@ -195,7 +197,7 @@ public class Gstconsultas extends JPanel {
             while (rs.next()) {
                 modelo.addRow(new Object[]{
                     rs.getInt("idCONSULTA"), rs.getString("nombre"), rs.getDate("fecha_consulta"),
-                    rs.getString("sintomas"), rs.getString("diagnostico"), rs.getString("tratamiento")
+                    rs.getString("sintomas"), rs.getString("diagnostico"), rs.getString("tratamiento"), rs.getString("observaciones")
                 });
             }
         } catch (SQLException ex) {

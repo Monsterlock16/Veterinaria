@@ -3,6 +3,8 @@ package Vista.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dialog;
+import java.awt.Frame;
 import java.awt.Font;
 import java.awt.Container;
 import java.awt.Window;
@@ -86,6 +88,12 @@ public final class TemaVeterinaria {
         if (ventana instanceof JFrame) {
             ((JFrame) ventana).getContentPane().setBackground(FONDO);
         }
+        // Ventanas de tamaño fijo
+        if (ventana instanceof Frame marco) {
+            marco.setResizable(false);
+        } else if (ventana instanceof Dialog dialogo) {
+            dialogo.setResizable(false);
+        }
         estilizarComponentes(ventana);
     }
 
@@ -164,6 +172,11 @@ public final class TemaVeterinaria {
     }
 
     private static void aplicarTabla(JTable tabla) {
+        // Solo consulta: las celdas no se editan con doble clic
+        tabla.setDefaultEditor(Object.class, null);
+        tabla.setDefaultEditor(Number.class, null);
+        tabla.setDefaultEditor(Boolean.class, null);
+        tabla.getTableHeader().setReorderingAllowed(false);
         tabla.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tabla.setForeground(TEXTO);
         tabla.setBackground(INPUT);

@@ -462,6 +462,43 @@ SELECT e.nombre AS especie, COUNT(r.idRAZA) AS razas
 FROM especie e LEFT JOIN raza r ON r.ESPECIE_idESPECIE = e.idESPECIE
 GROUP BY e.idESPECIE, e.nombre ORDER BY e.nombre;
 
+CREATE TABLE IF NOT EXISTS especialidad (
+  idESPECIALIDAD INT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL,
+  PRIMARY KEY (idESPECIALIDAD),
+  UNIQUE INDEX nombre_UNIQUE (nombre)
+) ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4;
+
+INSERT IGNORE INTO especialidad (nombre) VALUES
+  ('Medicina general'),
+  ('Medicina interna'),
+  ('Cirugía general'),
+  ('Cirugía de tejidos blandos'),
+  ('Ortopedia y traumatología'),
+  ('Dermatología'),
+  ('Cardiología'),
+  ('Oftalmología'),
+  ('Odontología veterinaria'),
+  ('Oncología'),
+  ('Neurología'),
+  ('Nefrología y urología'),
+  ('Gastroenterología'),
+  ('Endocrinología'),
+  ('Diagnóstico por imágenes'),
+  ('Anestesiología y manejo del dolor'),
+  ('Urgencias y cuidados intensivos'),
+  ('Reproducción y obstetricia'),
+  ('Medicina felina'),
+  ('Animales exóticos'),
+  ('Medicina aviar'),
+  ('Medicina equina'),
+  ('Rehabilitación y fisioterapia'),
+  ('Etología (comportamiento)'),
+  ('Nutrición clínica'),
+  ('Patología clínica y laboratorio');
+
+SELECT COUNT(*) AS especialidades FROM especialidad;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

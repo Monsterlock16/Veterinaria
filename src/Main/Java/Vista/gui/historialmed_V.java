@@ -32,7 +32,7 @@ public class historialmed_V extends JFrame {
     public historialmed_V() {
         TemaVeterinaria.aplicarIcono(this);
         setTitle("Historial Clínico de Mascotas");
-        setSize(850, 450);
+        setSize(900, 560);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -46,10 +46,13 @@ public class historialmed_V extends JFrame {
         top.add(btnBuscar);
 
         add(top, BorderLayout.NORTH);
-        add(new JScrollPane(tabla), BorderLayout.CENTER);
+        add(TablaDetalle.crear(tabla), BorderLayout.CENTER);
 
         TemaVeterinaria.aplicarEstiloVentana(this);
         cargarAnimalesCombo();
+        // El expediente se carga al elegir la mascota
+        cbAnimales.addActionListener(e -> cargarExpediente());
+        cargarExpediente();
     }
 
     private void cargarAnimalesCombo() {
