@@ -12,9 +12,10 @@ import Modelo.entidades.Veterinario;
 public class VeterinarioRepositorio {
 
     public List<Veterinario> obtenerTodos() {
-        String sql = "SELECT v.idVETERINARIO, v.especialidad, v.numero_licencia, "
+        String sql = "SELECT v.idVETERINARIO, e.nombre AS especialidad, v.numero_licencia, "
                    + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
                    + "FROM veterinario v "
+                   + "JOIN especialidad e ON e.idESPECIALIDAD = v.ESPECIALIDAD_idESPECIALIDAD "
                    + "JOIN persona p ON p.idPERSONA = v.PERSONA_idPERSONA "
                    + "LEFT JOIN usuario u ON u.PERSONA_idPERSONA = p.idPERSONA "
                    + "ORDER BY v.idVETERINARIO";
@@ -34,9 +35,10 @@ public class VeterinarioRepositorio {
     }
 
     public Veterinario buscarPorId(int id) {
-        String sql = "SELECT v.idVETERINARIO, v.especialidad, v.numero_licencia, "
+        String sql = "SELECT v.idVETERINARIO, e.nombre AS especialidad, v.numero_licencia, "
                    + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
                    + "FROM veterinario v "
+                   + "JOIN especialidad e ON e.idESPECIALIDAD = v.ESPECIALIDAD_idESPECIALIDAD "
                    + "JOIN persona p ON p.idPERSONA = v.PERSONA_idPERSONA "
                    + "LEFT JOIN usuario u ON u.PERSONA_idPERSONA = p.idPERSONA "
                    + "WHERE v.idVETERINARIO = ?";
@@ -61,9 +63,10 @@ public class VeterinarioRepositorio {
     public Veterinario buscarPorUsuario(String nombreUsuario) {
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) return null;
 
-        String sql = "SELECT v.idVETERINARIO, v.especialidad, v.numero_licencia, "
+        String sql = "SELECT v.idVETERINARIO, e.nombre AS especialidad, v.numero_licencia, "
                    + "p.idPERSONA, p.nombres, p.apellidos, p.fecha_nacimiento, p.documento, p.telefono, p.correo, u.usuario "
                    + "FROM veterinario v "
+                   + "JOIN especialidad e ON e.idESPECIALIDAD = v.ESPECIALIDAD_idESPECIALIDAD "
                    + "JOIN persona p ON p.idPERSONA = v.PERSONA_idPERSONA "
                    + "JOIN usuario u ON u.PERSONA_idPERSONA = p.idPERSONA "
                    + "WHERE u.usuario = ?";

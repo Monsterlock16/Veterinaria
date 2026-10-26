@@ -18,7 +18,7 @@ import Modelo.entidades.Especie;
 import Modelo.entidades.Propietario;
 import Modelo.entidades.Raza;
 import Modelo.repositorio.AnimalRepositorio;
-import Modelo.repositorio.Catalogorepositorio;
+import Modelo.repositorio.CatalogoRepositorio;
 import Modelo.repositorio.PropietarioRepositorio;
 import Modelo.repositorio.RepositorioException;
 import Vista.gui.MisAnimales;
@@ -29,7 +29,7 @@ public class MisAnimalesPresenter {
 
     private final AnimalRepositorio animalRepo = new AnimalRepositorio();
     private final PropietarioRepositorio propietarioRepo = new PropietarioRepositorio();
-    private final Catalogorepositorio catalogoRepo = new Catalogorepositorio();
+    private final CatalogoRepositorio catalogoRepo = new CatalogoRepositorio();
 
     private Propietario propietario;
     // Mascotas que muestra la tabla, en el mismo orden de las filas

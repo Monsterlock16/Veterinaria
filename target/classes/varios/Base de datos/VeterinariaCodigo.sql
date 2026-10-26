@@ -44,19 +44,36 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `dbo_veterinaria`.`VETERINARIO`
+-- Table `dbo_veterinaria`.`ESPECIALIDAD`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`ESPECIALIDAD` (
+  `idESPECIALIDAD` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`idESPECIALIDAD`),
+  UNIQUE INDEX `nombre_UNIQUE` (`nombre` ASC))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbo_veterinaria`.`VETERINARIO` (Relación 1:N con ESPECIALIDAD)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`VETERINARIO` (
   `idVETERINARIO` INT NOT NULL AUTO_INCREMENT,
   `PERSONA_idPERSONA` INT NOT NULL,
-  `especialidad` VARCHAR(50) NOT NULL,
+  `ESPECIALIDAD_idESPECIALIDAD` INT NOT NULL,
   `numero_licencia` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`idVETERINARIO`),
   UNIQUE INDEX `uq_VETERINARIO_PERSONA` (`PERSONA_idPERSONA` ASC),
   UNIQUE INDEX `numero_licencia_UNIQUE` (`numero_licencia` ASC),
+  INDEX `fk_VETERINARIO_ESPECIALIDAD1_idx` (`ESPECIALIDAD_idESPECIALIDAD` ASC),
   CONSTRAINT `fk_VETERINARIO_PERSONA1`
     FOREIGN KEY (`PERSONA_idPERSONA`)
     REFERENCES `dbo_veterinaria`.`PERSONA` (`idPERSONA`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_VETERINARIO_ESPECIALIDAD1`
+    FOREIGN KEY (`ESPECIALIDAD_idESPECIALIDAD`)
+    REFERENCES `dbo_veterinaria`.`ESPECIALIDAD` (`idESPECIALIDAD`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -184,8 +201,8 @@ CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`CONSULTA` (
   `HISTORIAL_MEDICO_idHISTORIAL_MEDICO` INT NOT NULL,
   `CITA_idCITA` INT NULL DEFAULT NULL,
   `VETERINARIO_idVETERINARIO` INT NOT NULL,
-  `fecha_consulta` DATE NOT NULL DEFAULT (CURRENT_DATE),
-  `hora_consulta` TIME NOT NULL DEFAULT (CURRENT_TIME),
+  `fecha_consulta` DATE NOT NULL,
+  `hora_consulta` TIME NOT NULL,
   `sintomas` VARCHAR(500) NOT NULL,
   `diagnostico` VARCHAR(500) NOT NULL,
   `tratamiento` VARCHAR(500) NOT NULL,
@@ -207,33 +224,6 @@ CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`CONSULTA` (
   CONSTRAINT `fk_CONSULTA_VETERINARIO1`
     FOREIGN KEY (`VETERINARIO_idVETERINARIO`)
     REFERENCES `dbo_veterinaria`.`VETERINARIO` (`idVETERINARIO`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-) ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `dbo_veterinaria`.`VACUNAS`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`VACUNAS` (
-  `idVACUNAS` INT NOT NULL AUTO_INCREMENT,
-  `HISTORIAL_MEDICO_idHISTORIAL_MEDICO` INT NOT NULL,
-  `CONSULTA_idCONSULTA` INT NULL DEFAULT NULL,
-  `nombre` VARCHAR(150) NOT NULL,
-  `dosis` DECIMAL(8,3) NOT NULL,
-  `fecha_aplicacion` DATE NOT NULL,
-  `proxima_fecha` DATE NULL DEFAULT NULL,
-  PRIMARY KEY (`idVACUNAS`),
-  INDEX `fk_VACUNAS_HISTORIAL_MEDICO1_idx` (`HISTORIAL_MEDICO_idHISTORIAL_MEDICO` ASC),
-  INDEX `fk_VACUNAS_CONSULTA1_idx` (`CONSULTA_idCONSULTA` ASC),
-  CONSTRAINT `fk_VACUNAS_HISTORIAL_MEDICO1`
-    FOREIGN KEY (`HISTORIAL_MEDICO_idHISTORIAL_MEDICO`)
-    REFERENCES `dbo_veterinaria`.`HISTORIAL_MEDICO` (`idHISTORIAL_MEDICO`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_VACUNAS_CONSULTA1`
-    FOREIGN KEY (`CONSULTA_idCONSULTA`)
-    REFERENCES `dbo_veterinaria`.`CONSULTA` (`idCONSULTA`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
@@ -300,175 +290,11 @@ CREATE TABLE IF NOT EXISTS `dbo_veterinaria`.`USUARIO` (
 ENGINE = InnoDB;
 
 -- =====================================================
--- Actualizacion de la base de datos (solo agrega, no borra nada)
--- Ejecutar en phpMyAdmin: seleccionar dbo_veterinaria > pestaña SQL
--- Se puede ejecutar mas de una vez sin problema.
+-- Actualización de la base de datos (datos e índices)
 -- =====================================================
 USE dbo_veterinaria;
 
--- 1) CITA: estado 'pendiente' y quitar el indice unico que dejaba
---    bloqueadas las horas de las citas canceladas.
---    (Primero se crea el indice normal porque la llave foranea lo necesita.)
---    Nota: IF NOT EXISTS / IF EXISTS funcionan en MariaDB (XAMPP).
-ALTER TABLE cita ADD INDEX IF NOT EXISTS idx_cita_vet_fecha_hora (VETERINARIO_idVETERINARIO, fecha, hora);
-ALTER TABLE cita DROP INDEX IF EXISTS uq_cita_vet_fecha_hora;
-ALTER TABLE cita MODIFY estado ENUM('programada','atendida','cancelada','pendiente') NOT NULL;
-
--- 2) ESPECIES para el desplegable (las que ya existan se ignoran)
-INSERT IGNORE INTO especie (nombre) VALUES
-  ('Canino'),
-  ('Felino'),
-  ('Ave'),
-  ('Roedor'),
-  ('Conejo'),
-  ('Reptil'),
-  ('Equino');
-
--- 3) RAZAS para el desplegable, ligadas a su especie
---    (las que ya existan se ignoran, por ejemplo Canino - Buldog)
-INSERT IGNORE INTO raza (ESPECIE_idESPECIE, nombre)
-SELECT e.idESPECIE, r.nombre
-FROM especie e
-JOIN (
-  SELECT 'Canino' AS especie, 'Criollo' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Buldog' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Labrador' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Golden Retriever' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Pastor Alemán' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Poodle' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Chihuahua' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Beagle' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Rottweiler' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Pitbull' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Schnauzer' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Husky Siberiano' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Shih Tzu' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Yorkshire Terrier' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Pug' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Cocker Spaniel' AS nombre
-  UNION ALL
-  SELECT 'Canino' AS especie, 'Dálmata' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Criollo' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Siamés' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Persa' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Angora' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Maine Coon' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Bengalí' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Ragdoll' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Azul Ruso' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Sphynx' AS nombre
-  UNION ALL
-  SELECT 'Felino' AS especie, 'Británico de Pelo Corto' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Canario' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Periquito' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Loro' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Cotorra' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Cacatúa' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Agapornis' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Ninfa' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Gallina' AS nombre
-  UNION ALL
-  SELECT 'Ave' AS especie, 'Paloma' AS nombre
-  UNION ALL
-  SELECT 'Roedor' AS especie, 'Hámster' AS nombre
-  UNION ALL
-  SELECT 'Roedor' AS especie, 'Cobayo' AS nombre
-  UNION ALL
-  SELECT 'Roedor' AS especie, 'Rata' AS nombre
-  UNION ALL
-  SELECT 'Roedor' AS especie, 'Ratón' AS nombre
-  UNION ALL
-  SELECT 'Roedor' AS especie, 'Jerbo' AS nombre
-  UNION ALL
-  SELECT 'Roedor' AS especie, 'Chinchilla' AS nombre
-  UNION ALL
-  SELECT 'Roedor' AS especie, 'Ardilla' AS nombre
-  UNION ALL
-  SELECT 'Conejo' AS especie, 'Cabeza de León' AS nombre
-  UNION ALL
-  SELECT 'Conejo' AS especie, 'Mini Lop' AS nombre
-  UNION ALL
-  SELECT 'Conejo' AS especie, 'Holandés' AS nombre
-  UNION ALL
-  SELECT 'Conejo' AS especie, 'Enano' AS nombre
-  UNION ALL
-  SELECT 'Conejo' AS especie, 'Angora' AS nombre
-  UNION ALL
-  SELECT 'Conejo' AS especie, 'Rex' AS nombre
-  UNION ALL
-  SELECT 'Conejo' AS especie, 'Gigante de Flandes' AS nombre
-  UNION ALL
-  SELECT 'Reptil' AS especie, 'Tortuga' AS nombre
-  UNION ALL
-  SELECT 'Reptil' AS especie, 'Iguana' AS nombre
-  UNION ALL
-  SELECT 'Reptil' AS especie, 'Gecko' AS nombre
-  UNION ALL
-  SELECT 'Reptil' AS especie, 'Serpiente' AS nombre
-  UNION ALL
-  SELECT 'Reptil' AS especie, 'Camaleón' AS nombre
-  UNION ALL
-  SELECT 'Reptil' AS especie, 'Dragón Barbudo' AS nombre
-  UNION ALL
-  SELECT 'Equino' AS especie, 'Criollo' AS nombre
-  UNION ALL
-  SELECT 'Equino' AS especie, 'Paso Fino' AS nombre
-  UNION ALL
-  SELECT 'Equino' AS especie, 'Pura Sangre' AS nombre
-  UNION ALL
-  SELECT 'Equino' AS especie, 'Cuarto de Milla' AS nombre
-  UNION ALL
-  SELECT 'Equino' AS especie, 'Andaluz' AS nombre
-  UNION ALL
-  SELECT 'Equino' AS especie, 'Percherón' AS nombre
-  UNION ALL
-  SELECT 'Equino' AS especie, 'Poni' AS nombre
-) r ON r.especie = e.nombre;
-
--- 4) Comprobacion (opcional)
-SELECT e.nombre AS especie, COUNT(r.idRAZA) AS razas
-FROM especie e LEFT JOIN raza r ON r.ESPECIE_idESPECIE = e.idESPECIE
-GROUP BY e.idESPECIE, e.nombre ORDER BY e.nombre;
-
-CREATE TABLE IF NOT EXISTS especialidad (
-  idESPECIALIDAD INT NOT NULL AUTO_INCREMENT,
-  nombre VARCHAR(50) NOT NULL,
-  PRIMARY KEY (idESPECIALIDAD),
-  UNIQUE INDEX nombre_UNIQUE (nombre)
-) ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4;
-
+-- Cargar ESPECIALIDADES
 INSERT IGNORE INTO especialidad (nombre) VALUES
   ('Medicina general'),
   ('Medicina interna'),
@@ -497,8 +323,90 @@ INSERT IGNORE INTO especialidad (nombre) VALUES
   ('Nutrición clínica'),
   ('Patología clínica y laboratorio');
 
-SELECT COUNT(*) AS especialidades FROM especialidad;
+-- CITA: ajuste de índice y estados
+ALTER TABLE cita ADD INDEX IF NOT EXISTS idx_cita_vet_fecha_hora (VETERINARIO_idVETERINARIO, fecha, hora);
+ALTER TABLE cita DROP INDEX IF EXISTS uq_cita_vet_fecha_hora;
+ALTER TABLE cita MODIFY estado ENUM('programada','atendida','cancelada','pendiente') NOT NULL;
 
+-- Cargar ESPECIES
+INSERT IGNORE INTO especie (nombre) VALUES
+  ('Canino'),
+  ('Felino'),
+  ('Ave'),
+  ('Roedor'),
+  ('Conejo'),
+  ('Reptil'),
+  ('Equino');
+
+-- Cargar RAZAS
+INSERT IGNORE INTO raza (ESPECIE_idESPECIE, nombre)
+SELECT e.idESPECIE, r.nombre
+FROM especie e
+JOIN (
+  SELECT 'Canino' AS especie, 'Criollo' AS nombre UNION ALL
+  SELECT 'Canino', 'Buldog' UNION ALL
+  SELECT 'Canino', 'Labrador' UNION ALL
+  SELECT 'Canino', 'Golden Retriever' UNION ALL
+  SELECT 'Canino', 'Pastor Alemán' UNION ALL
+  SELECT 'Canino', 'Poodle' UNION ALL
+  SELECT 'Canino', 'Chihuahua' UNION ALL
+  SELECT 'Canino', 'Beagle' UNION ALL
+  SELECT 'Canino', 'Rottweiler' UNION ALL
+  SELECT 'Canino', 'Pitbull' UNION ALL
+  SELECT 'Canino', 'Schnauzer' UNION ALL
+  SELECT 'Canino', 'Husky Siberiano' UNION ALL
+  SELECT 'Canino', 'Shih Tzu' UNION ALL
+  SELECT 'Canino', 'Yorkshire Terrier' UNION ALL
+  SELECT 'Canino', 'Pug' UNION ALL
+  SELECT 'Canino', 'Cocker Spaniel' UNION ALL
+  SELECT 'Canino', 'Dálmata' UNION ALL
+  SELECT 'Felino', 'Criollo' UNION ALL
+  SELECT 'Felino', 'Siamés' UNION ALL
+  SELECT 'Felino', 'Persa' UNION ALL
+  SELECT 'Felino', 'Angora' UNION ALL
+  SELECT 'Felino', 'Maine Coon' UNION ALL
+  SELECT 'Felino', 'Bengalí' UNION ALL
+  SELECT 'Felino', 'Ragdoll' UNION ALL
+  SELECT 'Felino', 'Azul Ruso' UNION ALL
+  SELECT 'Felino', 'Sphynx' UNION ALL
+  SELECT 'Felino', 'Británico de Pelo Corto' UNION ALL
+  SELECT 'Ave', 'Canario' UNION ALL
+  SELECT 'Ave', 'Periquito' UNION ALL
+  SELECT 'Ave', 'Loro' UNION ALL
+  SELECT 'Ave', 'Cotorra' UNION ALL
+  SELECT 'Ave', 'Cacatúa' UNION ALL
+  SELECT 'Ave', 'Agapornis' UNION ALL
+  SELECT 'Ave', 'Ninfa' UNION ALL
+  SELECT 'Ave', 'Gallina' UNION ALL
+  SELECT 'Ave', 'Paloma' UNION ALL
+  SELECT 'Roedor', 'Hámster' UNION ALL
+  SELECT 'Roedor', 'Cobayo' UNION ALL
+  SELECT 'Roedor', 'Rata' UNION ALL
+  SELECT 'Roedor', 'Ratón' UNION ALL
+  SELECT 'Roedor', 'Jerbo' UNION ALL
+  SELECT 'Roedor', 'Chinchilla' UNION ALL
+  SELECT 'Roedor', 'Ardilla' UNION ALL
+  SELECT 'Conejo', 'Cabeza de León' UNION ALL
+  SELECT 'Conejo', 'Mini Lop' UNION ALL
+  SELECT 'Conejo', 'Holandés' UNION ALL
+  SELECT 'Conejo', 'Enano' UNION ALL
+  SELECT 'Conejo', 'Angora' UNION ALL
+  SELECT 'Conejo', 'Rex' UNION ALL
+  SELECT 'Conejo', 'Gigante de Flandes' UNION ALL
+  SELECT 'Reptil', 'Tortuga' UNION ALL
+  SELECT 'Reptil', 'Iguana' UNION ALL
+  SELECT 'Reptil', 'Gecko' UNION ALL
+  SELECT 'Reptil', 'Serpiente' UNION ALL
+  SELECT 'Reptil', 'Camaleón' UNION ALL
+  SELECT 'Reptil', 'Dragón Barbudo' UNION ALL
+  SELECT 'Equino', 'Criollo' UNION ALL
+  SELECT 'Equino', 'Paso Fino' UNION ALL
+  SELECT 'Equino', 'Pura Sangre' UNION ALL
+  SELECT 'Equino', 'Cuarto de Milla' UNION ALL
+  SELECT 'Equino', 'Andaluz' UNION ALL
+  SELECT 'Equino', 'Percherón' UNION ALL
+  SELECT 'Equino', 'Poni'
+) r ON r.especie = e.nombre;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

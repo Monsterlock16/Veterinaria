@@ -2,11 +2,11 @@ package Vista.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dialog;
+import java.awt.Frame;
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
+import java.awt.Container;
 import java.awt.Window;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +15,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -88,6 +87,12 @@ public final class TemaVeterinaria {
     public static void aplicarEstiloVentana(Window ventana) {
         if (ventana instanceof JFrame) {
             ((JFrame) ventana).getContentPane().setBackground(FONDO);
+        }
+        // Ventanas de tamaño fijo
+        if (ventana instanceof Frame marco) {
+            marco.setResizable(false);
+        } else if (ventana instanceof Dialog dialogo) {
+            dialogo.setResizable(false);
         }
         estilizarComponentes(ventana);
     }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Opciones de los desplegables (especies, razas y especialidades), leidas de la base de datos. */
-public class Catalogorepositorio {
+public class CatalogoRepositorio {
 
     /** Todas las especies animales, ordenadas por nombre. */
     public List<String> listarEspecies() {

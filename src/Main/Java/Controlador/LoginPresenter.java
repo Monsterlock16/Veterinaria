@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import Modelo.entidades.Usuario;
-import Modelo.repositorio.Catalogorepositorio;
+import Modelo.repositorio.CatalogoRepositorio;
 import Modelo.repositorio.RepositorioException;
 import Modelo.repositorio.UsuarioRepositorio;
 import Vista.gui.login;
@@ -80,7 +80,7 @@ public class LoginPresenter {
     /** Especialidades guardadas en la base de datos, para el desplegable del registro de veterinarios. */
     public List<String> listarEspecialidades() {
         try {
-            return new Catalogorepositorio().listarEspecialidades();
+            return new CatalogoRepositorio().listarEspecialidades();
         } catch (RepositorioException e) {
             return new ArrayList<>();
         }

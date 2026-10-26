@@ -2,8 +2,6 @@ package Controlador;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -15,8 +13,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import Modelo.entidades.Animal;
-import Modelo.entidades.Especie;
-import Modelo.entidades.Raza;
 import Modelo.repositorio.AnimalRepositorio;
 import Modelo.repositorio.RepositorioException;
 import Vista.gui.gstanimalesV;
@@ -118,16 +114,10 @@ public class GstanimalesPresenter {
         vista.getTxtRaza().setText(a.getRaza().getNombre());
         vista.getTxtColor().setText(a.getColor());
         vista.getTxtFechaNacimiento().setText(String.valueOf(a.getFechaNacimiento()));
-        vista.getCbSexo().setSelectedItem(capitalizar(a.getSexo().name()));
+        vista.getTxtSexo().setText(capitalizar(a.getSexo().name()));
         vista.getSpPeso().setValue(a.getPeso().doubleValue());
         vista.getCbEstadoSalud().setSelectedItem(capitalizar(a.getEstado().name()));
 
-        vista.getTxtNombre().setEditable(true);
-        vista.getTxtEspecie().setEditable(true);
-        vista.getTxtRaza().setEditable(true);
-        vista.getTxtColor().setEditable(true);
-        vista.getTxtFechaNacimiento().setEditable(true);
-        vista.getCbSexo().setEnabled(true);
         vista.getSpPeso().setEnabled(true);
         vista.getCbEstadoSalud().setEnabled(true);
         vista.getBtnActualizar().setEnabled(true);
@@ -147,45 +137,20 @@ public class GstanimalesPresenter {
         vista.getTxtRaza().setText("");
         vista.getTxtColor().setText("");
         vista.getTxtFechaNacimiento().setText("");
-        vista.getCbSexo().setSelectedIndex(0);
+        vista.getTxtSexo().setText("");
         vista.getSpPeso().setValue(0.0);
         vista.getCbEstadoSalud().setSelectedIndex(0);
 
-        vista.getTxtNombre().setEditable(false);
-        vista.getTxtEspecie().setEditable(false);
-        vista.getTxtRaza().setEditable(false);
-        vista.getTxtColor().setEditable(false);
-        vista.getTxtFechaNacimiento().setEditable(false);
-        vista.getCbSexo().setEnabled(false);
         vista.getSpPeso().setEnabled(false);
         vista.getCbEstadoSalud().setEnabled(false);
         vista.getBtnActualizar().setEnabled(false);
     }
 
-    /** Guarda los cambios del animal seleccionado; el propietario se mantiene intacto. */
+    /** Guarda en la base de datos el nuevo peso y estado de salud del animal seleccionado. */
     private void actualizar() {
         Animal a = animalSeleccionado();
         if (a == null) {
             JOptionPane.showMessageDialog(vista, "Seleccione un animal de la tabla.");
-            return;
-        }
-
-        String nombre = vista.getTxtNombre().getText().trim();
-        String especieNombre = vista.getTxtEspecie().getText().trim();
-        String razaNombre = vista.getTxtRaza().getText().trim();
-        String color = vista.getTxtColor().getText().trim();
-        if (nombre.isEmpty() || especieNombre.isEmpty() || razaNombre.isEmpty() || color.isEmpty()) {
-            JOptionPane.showMessageDialog(vista, "Complete el nombre, la especie, la raza y el color.",
-                    "Datos incompletos", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        LocalDate fechaNacimiento;
-        try {
-            fechaNacimiento = LocalDate.parse(vista.getTxtFechaNacimiento().getText().trim());
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(vista, "La fecha debe tener el formato YYYY-MM-DD.",
-                    "Fecha no válida", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -198,13 +163,7 @@ public class GstanimalesPresenter {
         }
 
         try {
-            a.setNombre(nombre);
-            a.setRaza(new Raza(0, new Especie(0, especieNombre), razaNombre));
-            a.setFechaNacimiento(fechaNacimiento);
-            a.setSexo(Animal.Sexo.valueOf(
-                    vista.getCbSexo().getSelectedItem().toString().toUpperCase(Locale.ROOT)));
             a.setPeso(peso);
-            a.setColor(color);
             a.setEstado(Animal.EstadoAnimal.valueOf(
                     vista.getCbEstadoSalud().getSelectedItem().toString().toUpperCase(Locale.ROOT)));
 

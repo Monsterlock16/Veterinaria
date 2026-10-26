@@ -92,16 +92,29 @@ public class UsuarioRepositorio {
                 psProp.executeUpdate();
 
             } else if ("VETERINARIO".equalsIgnoreCase(rol)) {
-                String esp = (especialidad == null || especialidad.trim().isEmpty()) ? "General" : especialidad.trim();
-                String sqlVet = "INSERT INTO veterinario (PERSONA_idPERSONA, especialidad, numero_licencia) "
+                String esp = (especialidad == null || especialidad.trim().isEmpty()) ? "Medicina general" : especialidad.trim();
+                
+                // 1. Obtener el idESPECIALIDAD a partir del nombre recibido
+                int idEspecialidad = 1; // ID por defecto (Medicina general)
+                String sqlBuscarEsp = "SELECT idESPECIALIDAD FROM especialidad WHERE nombre = ?";
+                try (PreparedStatement psEsp = cn.prepareStatement(sqlBuscarEsp)) {
+                    psEsp.setString(1, esp);
+                    try (ResultSet rsEsp = psEsp.executeQuery()) {
+                        if (rsEsp.next()) {
+                            idEspecialidad = rsEsp.getInt(1);
+                        }
+                    }
+                }
+
+                // 2. Insertar usando la nueva columna ESPECIALIDAD_idESPECIALIDAD
+                String sqlVet = "INSERT INTO veterinario (PERSONA_idPERSONA, ESPECIALIDAD_idESPECIALIDAD, numero_licencia) "
                               + "VALUES (?, ?, ?)";
                 PreparedStatement psVet = cn.prepareStatement(sqlVet);
                 psVet.setInt(1, idPersonaGenerado);
-                psVet.setString(2, esp);
+                psVet.setInt(2, idEspecialidad);
                 psVet.setString(3, "LIC-" + idPersonaGenerado);
                 psVet.executeUpdate();
             }
-
             cn.commit();
             return true;
 

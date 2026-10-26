@@ -26,18 +26,19 @@ import javax.swing.table.TableRowSorter;
 import Controlador.GstanimalesPresenter;
 
 /**
- * Vista clinica del veterinario: muestra todos los animales existentes y permite
- * modificar sus atributos, sin registrar ni eliminar animales.
+ * Vista clinica del veterinario: muestra todos los animales y solo permite
+ * modificar el peso y el estado de salud. La logica esta en GstanimalesPresenter.
  */
 public class gstanimalesV extends JFrame {
-    // El propietario es el unico dato que no puede modificarse desde el perfil veterinario.
+    // Datos de identificacion: solo se muestran
     private final JTextField txtPropietario = new JTextField();
     private final JTextField txtNombre = new JTextField();
     private final JTextField txtEspecie = new JTextField();
     private final JTextField txtRaza = new JTextField();
     private final JTextField txtColor = new JTextField();
     private final JTextField txtFechaNacimiento = new JTextField();
-    private final JComboBox<String> cbSexo = new JComboBox<>(new String[]{"Macho", "Hembra"});
+    private final JTextField txtSexo = new JTextField();
+    // Datos clinicos: estos si se pueden modificar
     private final JSpinner spPeso = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 1000.0, 0.1));
     private final JComboBox<String> cbEstadoSalud = new JComboBox<>(new String[]{"Activo", "Inactivo"});
 
@@ -75,7 +76,7 @@ public class gstanimalesV extends JFrame {
         formulario.setBackground(Color.WHITE);
         formulario.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(220, 225, 230)),
-                    "Datos del animal (seleccione uno para modificarlo)"),
+                    "Datos del animal (solo se modifican el peso y el estado de salud)"),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
@@ -86,11 +87,14 @@ public class gstanimalesV extends JFrame {
         formulario.add(new JLabel("Peso (kg):")); formulario.add(spPeso);
         formulario.add(new JLabel("Color:")); formulario.add(txtColor);
         formulario.add(new JLabel("Fecha de nacimiento:")); formulario.add(txtFechaNacimiento);
-        formulario.add(new JLabel("Sexo:")); formulario.add(cbSexo);
+        formulario.add(new JLabel("Sexo:")); formulario.add(txtSexo);
         formulario.add(new JLabel("Estado de salud:")); formulario.add(cbEstadoSalud);
         formulario.add(new JLabel()); formulario.add(new JLabel());
 
-        txtPropietario.setEditable(false);
+        for (JTextField campo : new JTextField[]{txtPropietario, txtNombre, txtEspecie, txtRaza,
+                txtColor, txtFechaNacimiento, txtSexo}) {
+            campo.setEditable(false);
+        }
 
         // Busqueda y botones junto al formulario (el boton "Volver al menu" ocupa la parte de abajo)
         JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
@@ -134,7 +138,7 @@ public class gstanimalesV extends JFrame {
     public JTextField getTxtRaza() { return txtRaza; }
     public JTextField getTxtColor() { return txtColor; }
     public JTextField getTxtFechaNacimiento() { return txtFechaNacimiento; }
-    public JComboBox<String> getCbSexo() { return cbSexo; }
+    public JTextField getTxtSexo() { return txtSexo; }
     public JSpinner getSpPeso() { return spPeso; }
     public JComboBox<String> getCbEstadoSalud() { return cbEstadoSalud; }
     public JTextField getTxtBuscar() { return txtBuscar; }
